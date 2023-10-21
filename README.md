@@ -42,14 +42,14 @@ User can update task through this update form.
 User can add task through this create form. 
 <br />
 <br />
-![Image of Add Task](https://github.com/victorjongsoon/todo-app/blob/main/image/add-task-page.PNG)
+![Image of Add Task](https://github.com/victorjongsoon/todo-app/blob/main/image/add-task-page-update.PNG)
 
 ## 7 - Form Validation
 Simple form validation such as form error message and no empty field, minimum 3 characters field 
 are specfic.
 <br />
 <br />
-![Image of Add Task](https://github.com/victorjongsoon/todo-app/blob/main/image/add-task-page.PNG)
+![Image of Form Validation](https://github.com/victorjongsoon/todo-app/blob/main/image/form-validation.PNG)
 
 # What can be improved in this project?
 1. User Authentication and Authorization (using hardcoded authentication for now)
