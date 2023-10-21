@@ -23,6 +23,7 @@ In the ToDo Page, users can
 - Delete tasks which they no longer need.
 <br />
 <br />
+
 ![Image of ToDo Page](https://github.com/victorjongsoon/todo-app/blob/main/image/todo-page.PNG)
 
 ## 4 - Delete Task
