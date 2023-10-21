@@ -1,9 +1,12 @@
-<h1>ToDo Update</h1>
+<ng-container *ngIf="todo.id > 0; else createTodo">
+    <h1>ToDo Update</h1>
+</ng-container>
+
+<ng-template #createTodo>
+    <h1>ToDo Create</h1>
+</ng-template>
 
 <div class="container">
-
-    
-   
 
     <form (ngSubmit)="!todoForm.invalid && saveTodo()"  #todoForm="ngForm">
         <fieldset class="form-group" *ngIf="todo.id != -1">
