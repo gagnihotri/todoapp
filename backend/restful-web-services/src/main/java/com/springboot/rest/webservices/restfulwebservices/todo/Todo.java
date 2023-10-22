@@ -2,16 +2,29 @@ package com.springboot.rest.webservices.restfulwebservices.todo;
 
 import java.util.Date;
 
+import jakarta.annotation.Generated;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name="todo")
 public class Todo {
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
+    private Long id;
+    @Column(name="username")
     private String username;
+    @Column(name="description")
     private String description;
+    @Column(name="target_date")
     private Date targetDate;
+    @Column(name="is_done")
     private boolean isDone;
 
     protected Todo(){}
 
-    public Todo(long id, String username, String description, Date targetDate, boolean isDone) {
+    public Todo(Long id, String username, String description, Date targetDate, boolean isDone) {
         this.id = id;
         this.username = username;
         this.description = description;
@@ -19,10 +32,10 @@ public class Todo {
         this.isDone = isDone;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getUsername() {
