@@ -15,10 +15,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfigurationBasicAuth{
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        RequestMatcher optionsMatcher = new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.toString());
+        RequestMatcher optionsMatcher = new AntPathRequestMatcher("/**", HttpMethod.GET.toString());
         //1: Response to preflight request doesn't pass access control check
         //2: basic auth
         return
