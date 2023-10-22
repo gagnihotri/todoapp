@@ -51,9 +51,19 @@ are specfic.
 <br />
 ![Image of Form Validation](https://github.com/victorjongsoon/todo-app/blob/main/image/form-validation.PNG)
 
+## 8 - Connection to database
+Implmented connection from application to MySQL Workbench, allowing data to be retreive, delete, update, create 
+directly to database from frontend.
+are specfic.
+<br />
+<br />
+![Image of Todo JDBC Page](https://github.com/victorjongsoon/todo-app/blob/main/image/todo-jdbc-page.PNG)
+<br />
+![Image of Form jdbc](https://github.com/victorjongsoon/todo-app/blob/main/image/todo-jdbc.PNG)
+
 # What can be improved in this project?
 1. User Authentication and Authorization (using hardcoded authentication for now)
-2. Connecting with JPA and Hibernate to make use of database (hardcoded data for now) 
+2. Connecting with JPA and Hibernate to make use of database (hardcoded data for now) - Done
 
 # Skillset required for  the project
 * HTML, CSS (Bootstrap), Javascript
