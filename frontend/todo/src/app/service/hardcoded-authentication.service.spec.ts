@@ -6,7 +6,7 @@ describe('HardcodedAuthenticationService', () => {
   let service: HardcodedAuthenticationService;
 
   beforeEach(() => {
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [HttpClientTestingModule], // Add this
       providers: [HardcodedAuthenticationService] // Ensure service is provided
     });

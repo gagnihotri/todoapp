@@ -6,7 +6,7 @@ describe('RouteGuardService', () => {
   let service: RouteGuardService;
 
   beforeEach(() => {
-      await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
         imports: [HttpClientTestingModule], // Add this
         providers: [RouteGuardService] // Ensure service is provided
       });
