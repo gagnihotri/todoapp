@@ -86,7 +86,6 @@ jobs:
 
       - name: Run SonarQube Analysis
         run: |
-          npx eslint frontend/todo --ext .ts,.tsx || true
           npx sonar-scanner -Dsonar.token=${{ secrets.SONAR_TOKEN }}
 
       - name: Check SonarQube Quality Gate
