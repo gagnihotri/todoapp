@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: backend-coverage
-          path: backend/target/site/jacoco
+          path: backend/restful-web-services/target/site/jacoco
 
   build-frontend:
     name: Build & Test Frontend
@@ -66,12 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
-          path: frontend/coverage
-
-      - name: Build Frontend
-        run: |
-          cd frontend
-          npm run build
+          path: frontend/todo/coverage
 
   sonar-analysis:
     name: SonarQube Analysis
@@ -91,7 +86,7 @@ jobs:
 
       - name: Run SonarQube Analysis
         run: |
-          cd frontend
+          cd frontend/todo
           npx eslint . --ext .ts,.tsx || true
           npx sonar-scanner -Dsonar.token=${{ secrets.SONAR_TOKEN }}
 
@@ -100,7 +95,7 @@ jobs:
           sleep 10
           RESPONSE=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=fullapp_todoapp")
           
-          echo "📊 SonarQube Quality Gate Response:"
+          echo "SonarQube Quality Gate Response:"
           echo "$RESPONSE" | jq .
 
           STATUS=$(echo "$RESPONSE" | jq -r .projectStatus.status)
