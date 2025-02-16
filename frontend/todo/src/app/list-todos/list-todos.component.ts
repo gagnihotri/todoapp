@@ -23,22 +23,6 @@ export class ListTodosComponent implements OnInit {
 
   todos: Todo[] = []
   message:string=""
-  // = [
-  //   new Todo(1, "Learn  Dance", false, new Date()),
-  //   new Todo(2, "Finish Work", true, new Date()),
-  //   new Todo(3, "Play Basketball", false, new Date()),
-  //   new Todo(4, "Learn Soccer", false, new Date()),
-
-  //   // {id : 1, description: "Learn  Dance"},
-  //   // {id : 2, description: "Finish Work"},
-  //   // {id : 3, description: "Play Basketball"},
-  //   // {id : 4, description: "Learn Soccer"},
-  // ]
-
-  // todo = {
-  //   id : 1,
-  //   description: "Learn to Dance"
-  // }
 
   constructor(
     private todoService:TodoDataService,
