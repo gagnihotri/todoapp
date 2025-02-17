@@ -186,7 +186,7 @@ jobs:
           cd frontend/todo
           npm install
           npm run build --prod
-          docker build -t \
+          docker build \
             -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }} \
             -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:latest \
             -f ../Dockerfile . 
