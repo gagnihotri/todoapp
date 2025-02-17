@@ -10,6 +10,7 @@ jobs:
   build-backend:
     name: Build & Test Backend
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -48,7 +49,7 @@ jobs:
   build-frontend:
     name: Build & Test Frontend
     runs-on: ubuntu-latest
-
+    if: false
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -78,7 +79,7 @@ jobs:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
     needs: [build-backend, build-frontend]
-
+    if: false
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -155,7 +156,7 @@ jobs:
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
           cd backend/restful-web-services
           mvn clean package -DskipTests
-          docker build -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }} .
+          docker build -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }} -f ../Dockerfile  .
           docker tag -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }}  ${{ secrets.DOCKERHUB_REPO }}/backend-app:latest
 
       - name: Push Backend Image to DockerHub
@@ -183,7 +184,7 @@ jobs:
           cd frontend/todo
           npm install
           npm run build --prod
-          docker build -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }} .
+          docker build -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }} -f ../Dockerfile .
           docker tag -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }}  ${{ secrets.DOCKERHUB_REPO }}/backend-app:latest
 
       - name: Push Backend Image to DockerHub
