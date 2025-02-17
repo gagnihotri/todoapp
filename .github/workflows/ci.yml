@@ -154,6 +154,8 @@ jobs:
       - name: Build Backend Docker Image
         run: |
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          echo "RDS_DB_PASSWORD=${{ secrets.RDS_DB_PASSWORD }}" >> $GITHUB_ENV
+
           cd backend/restful-web-services
           mvn clean package -DskipTests
           docker build \
@@ -191,7 +193,7 @@ jobs:
             -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:latest \
             -f ../Dockerfile . 
 
-      - name: Push Backend Image to DockerHub
+      - name: Push Frontend Image to DockerHub
         run: |
           docker push ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }}
           docker push ${{ secrets.DOCKERHUB_REPO }}/frontend-app:latest
