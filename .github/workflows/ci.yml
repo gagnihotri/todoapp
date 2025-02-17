@@ -156,8 +156,10 @@ jobs:
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
           cd backend/restful-web-services
           mvn clean package -DskipTests
-          docker build -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }} -f ../Dockerfile  .
-          docker tag -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }}  ${{ secrets.DOCKERHUB_REPO }}/backend-app:latest
+          docker build \
+            -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }} \
+            -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:latest \
+            -f ../Dockerfile  . 
 
       - name: Push Backend Image to DockerHub
         run: |
@@ -184,8 +186,10 @@ jobs:
           cd frontend/todo
           npm install
           npm run build --prod
-          docker build -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }} -f ../Dockerfile .
-          docker tag -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }}  ${{ secrets.DOCKERHUB_REPO }}/backend-app:latest
+          docker build -t \
+            -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }} \
+            -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:latest \
+            -f ../Dockerfile . 
 
       - name: Push Backend Image to DockerHub
         run: |
