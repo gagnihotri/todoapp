@@ -188,7 +188,7 @@ jobs:
           npm run build --prod
           docker build -t \
             -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }} \
-            -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:latest \
+            -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:latest \
             -f ../Dockerfile . 
 
       - name: Push Backend Image to DockerHub
