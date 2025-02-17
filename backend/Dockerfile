@@ -1,5 +1,5 @@
 # Use Eclipse Temurin JRE 17 for a lightweight runtime
-FROM eclipse-temurin:17-jre AS runtime
+FROM eclipse-temurin:17-jre-alpine AS runtime
 
 # Set the working directory
 WORKDIR /app
