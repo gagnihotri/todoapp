@@ -30,6 +30,18 @@
       community.docker.docker_image:
         name: gyanendranagarro/backend-app:latest
         source: pull
+    
+    - name: Stop Frontend
+      community.docker.docker_container:
+        name: frontend-app
+        state: stopped
+      ignore_errors: true
+
+    - name: Stop Backend
+      community.docker.docker_container:
+        name: backend-app
+        state: stopped
+      ignore_errors: true
 
     - name: Run Frontend
       community.docker.docker_container:
