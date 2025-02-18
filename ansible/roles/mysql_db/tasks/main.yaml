@@ -30,4 +30,4 @@
     login_user: "{{ db_user }}"
     login_password: "{{ db_password }}"
     state: import
-    target: ../backend/create_database.sql  # SQL script to create the table
+    target: ./backend/create_database.sql  # SQL script to create the table
