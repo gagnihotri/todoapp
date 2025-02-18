@@ -220,7 +220,7 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i ./ansible-deploy/inventory.ini  -u ec2-user --private-key ~/.ssh/id_rsa ./ansible-deploy/deploy.yml
+          ansible-playbook -i ./ansible-deploy/inventory.ini  -u ec2-user --private-key ~/.ssh/id_rsa ./ansible-deploy/deploy.yaml
 
 
 
