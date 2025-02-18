@@ -33,18 +33,18 @@
 
     - name: Run Frontend
       community.docker.docker_container:
-        name: myapp
+        name: frontend-app
         image: gyanendranagarro/frontend-app:latest
-        state: started
+        state: restarted
         restart_policy: always
         ports:
-          - "80:4200"
+          - "4200:4200"
   
     - name: Run backend
       community.docker.docker_container:
-        name: myapp
+        name: backend-app
         image: gyanendranagarro/backend-app:latest
-        state: started
+        state: restarted
         restart_policy: always
         ports:
           - "80:80"
