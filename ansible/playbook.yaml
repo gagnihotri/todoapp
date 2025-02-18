@@ -3,7 +3,7 @@
   hosts: all
   become: true
   vars_files:
-    - ansible/vars/main.yaml
+    - ./vars/main.yaml
   roles:
     - docker
     - mysql_db
