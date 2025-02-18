@@ -137,7 +137,7 @@ jobs:
     name: Package Backend
     runs-on: ubuntu-latest
     #needs: sonar-analysis
-
+    if: false
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -172,7 +172,7 @@ jobs:
     name: Package Frontend
     runs-on: ubuntu-latest
     #needs: sonar-analysis
-
+    if: false
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -197,6 +197,31 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }}
           docker push ${{ secrets.DOCKERHUB_REPO }}/frontend-app:latest
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    #needs: [package-backend, package-frontend]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+
+      name: Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i ./ansible-deploy/inventory.ini  -u ec2-user --private-key ~/.ssh/id_rsa ./ansible-deploy/deploy.yml
+
 
 
 
