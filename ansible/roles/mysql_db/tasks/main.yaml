@@ -5,6 +5,11 @@
     state: present
   when: ansible_facts.packages['mariadb105'] is not defined
 
+- name: "Install ansible python3 mysql dependency"
+  apt:
+    name: python3-mysqldb
+    state: latest
+
 - name: Create table
   mysql_db:
     name: ""  # Specify the database name here
