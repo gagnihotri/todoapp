@@ -4,7 +4,7 @@
     name: mysql
     state: present
   when: ansible_facts.packages.mysql is not defined
-  
+
 - name: Create table
   mysql_db:
     login_host: "{{ db_host }}"

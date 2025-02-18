@@ -1,57 +1,57 @@
 ---
 - name: Install Docker
-    ansible.builtin.yum:
-      name: docker
-      state: present
+  ansible.builtin.yum:
+    name: docker
+    state: present
 
-  - name: Start Docker service
-    ansible.builtin.service:
-      name: docker
-      state: started
-      enabled: yes
+- name: Start Docker service
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: yes
 
-  - name: Add ec2-user to Docker group
-    ansible.builtin.user:
-      name: ec2-user
-      groups: docker
-      append: yes
+- name: Add ec2-user to Docker group
+  ansible.builtin.user:
+    name: ec2-user
+    groups: docker
+    append: yes
 
-  - name: Pull Frontend image
-    community.docker.docker_image:
-      name: gyanendranagarro/frontend-app:latest
-      source: pull
-  
-  - name: Pull Backend image
-    community.docker.docker_image:
-      name: gyanendranagarro/backend-app:latest
-      source: pull
-  
-  - name: Stop Frontend
-    community.docker.docker_container:
-      name: frontend-app
-      state: stopped
-    ignore_errors: true
+- name: Pull Frontend image
+  community.docker.docker_image:
+    name: gyanendranagarro/frontend-app:latest
+    source: pull
 
-  - name: Stop Backend
-    community.docker.docker_container:
-      name: backend-app
-      state: stopped
-    ignore_errors: true
+- name: Pull Backend image
+  community.docker.docker_image:
+    name: gyanendranagarro/backend-app:latest
+    source: pull
 
-  - name: Run Frontend
-    community.docker.docker_container:
-      name: frontend-app
-      image: gyanendranagarro/frontend-app:latest
-      state: started
-      restart_policy: always
-      ports:
-        - "4200:80"
+- name: Stop Frontend
+  community.docker.docker_container:
+    name: frontend-app
+    state: stopped
+  ignore_errors: true
 
-  - name: Run backend
-    community.docker.docker_container:
-      name: backend-app
-      image: gyanendranagarro/backend-app:latest
-      state: started
-      restart_policy: always
-      ports:
-        - "8080:8080"
+- name: Stop Backend
+  community.docker.docker_container:
+    name: backend-app
+    state: stopped
+  ignore_errors: true
+
+- name: Run Frontend
+  community.docker.docker_container:
+    name: frontend-app
+    image: gyanendranagarro/frontend-app:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "4200:80"
+
+- name: Run backend
+  community.docker.docker_container:
+    name: backend-app
+    image: gyanendranagarro/backend-app:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "8080:8080"
