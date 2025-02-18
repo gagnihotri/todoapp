@@ -6,10 +6,17 @@
       - python3-pip
     state: present
 
+- name: MySql module deps
+  ansible.builtin.yum:
+    name: 
+      - python3-devel
+      - mysql-devel
+      - pkgconfig 
+    state: present
+
 - name: Install PyMySQL using pip
   ansible.builtin.pip:
     name: 
-      - PyMySQL
       - mysqlclient
     state: present
     executable: /usr/bin/pip3
