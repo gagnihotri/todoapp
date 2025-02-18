@@ -1,0 +1,3 @@
+db_host: "testmysqlidentifier.czaicoesqem3.us-east-1.rds.amazonaws.com"
+db_user: "admin"
+db_password: "yourpassword"

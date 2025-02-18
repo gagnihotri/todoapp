@@ -155,6 +155,7 @@ jobs:
         run: |
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
           echo "RDS_DB_PASSWORD=${{ secrets.RDS_DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "RDS_DB_ENDPOINT=${{ secrets.RDS_DB_ENDPOINT }}" >> $GITHUB_ENV
 
           cd backend/restful-web-services
           mvn clean package -DskipTests
@@ -220,8 +221,7 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i ./ansible-deploy/inventory.ini ./ansible-deploy/deploy.yaml
-
-
-
+          ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yaml \
+            --extra-vars "db_host=${{ secrets.RDS_DB_ENDPOINT }} \
+              db_password=${{ secrets.RDS_DB_PASSWORD }}"
 
