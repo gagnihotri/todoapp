@@ -1,9 +1,9 @@
 ---
 - name: Install MySQL client
   ansible.builtin.yum:
-    name: mysql
+    name: mariadb105
     state: present
-  when: ansible_facts.packages.mysql is not defined
+  when: ansible_facts.packages['mariadb105'] is not defined
 
 - name: Create table
   mysql_db:
