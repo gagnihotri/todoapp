@@ -19,6 +19,7 @@
   ansible.builtin.pip:
     name: PyMySQL
     state: present
+    executable: /usr/bin/pip3
 
 - name: Create table
   mysql_db:
@@ -29,6 +30,4 @@
     state: import
     target: ../backend/create_database.sql  # SQL script to create the table
   delegate_to: localhost
-  environment:
-    ANSIBLE_PYTHON_INTERPRETER: "/usr/bin/python3"
 
