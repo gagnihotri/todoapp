@@ -25,7 +25,7 @@
 
 - name: Copy SQL file to target host
   ansible.builtin.copy:
-    src: ./backend/create_database.sql
+    src: ../backend/create_database.sql
     dest: /tmp/create_database.sql
 
 - name: Create table
