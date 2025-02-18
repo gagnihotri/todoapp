@@ -16,7 +16,7 @@
       - pkgconfig 
     state: present
 
-- name: Install PyMySQL using pip
+- name: Install mysqlclient
   ansible.builtin.pip:
     name: 
       - mysqlclient
