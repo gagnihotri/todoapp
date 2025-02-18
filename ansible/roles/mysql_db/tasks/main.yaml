@@ -1,23 +1,16 @@
 ---
-- name: Install MySQL client
-  ansible.builtin.yum:
-    name: mariadb105
-    state: present
-  when: ansible_facts.packages['mariadb105'] is not defined
-
 - name: Install Python3
   ansible.builtin.yum:
-    name: python3
-    state: present
-
-- name: Install pip for Python3
-  ansible.builtin.yum:
-    name: python3-pip
+    name: 
+      - python3
+      - python3-pip
     state: present
 
 - name: Install PyMySQL using pip
   ansible.builtin.pip:
-    name: PyMySQL
+    name: 
+      - PyMySQL
+      - mysqlclient
     state: present
     executable: /usr/bin/pip3
 
@@ -29,5 +22,3 @@
     login_password: "{{ db_password }}"
     state: import
     target: ../backend/create_database.sql  # SQL script to create the table
-  delegate_to: localhost
-
