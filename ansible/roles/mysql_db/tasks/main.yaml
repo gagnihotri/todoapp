@@ -25,7 +25,7 @@
 
 - name: Create table
   mysql_db:
-    name: ""  # Specify the database name here
+    name: "tododatabase"  # Specify the database name here
     login_host: "{{ db_host }}"
     login_user: "{{ db_user }}"
     login_password: "{{ db_password }}"
