@@ -9,6 +9,7 @@
 - name: MySql module deps
   ansible.builtin.yum:
     name: 
+      - gcc
       - python3-devel
       - mariadb105
       - mariadb105-devel
