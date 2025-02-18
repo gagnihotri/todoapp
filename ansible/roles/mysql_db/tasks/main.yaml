@@ -10,7 +10,6 @@
   ansible.builtin.yum:
     name: 
       - python3-devel
-      - mysql-devel
       - pkgconfig 
     state: present
 
