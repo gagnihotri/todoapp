@@ -10,6 +10,8 @@
   ansible.builtin.yum:
     name: 
       - python3-devel
+      - mariadb105
+      - mariadb105-devel
       - pkgconfig 
     state: present
 
