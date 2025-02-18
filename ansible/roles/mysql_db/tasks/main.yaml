@@ -29,4 +29,6 @@
     state: import
     target: ../backend/create_database.sql  # SQL script to create the table
   delegate_to: localhost
+  environment:
+    ANSIBLE_PYTHON_INTERPRETER: "/usr/bin/python3"
 
