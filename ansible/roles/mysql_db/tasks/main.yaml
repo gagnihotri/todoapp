@@ -23,6 +23,11 @@
     state: present
     executable: /usr/bin/pip3
 
+- name: Copy SQL file to target host
+  ansible.builtin.copy:
+    src: ./backend/create_database.sql
+    dest: /tmp/create_database.sql
+
 - name: Create table
   mysql_db:
     name: "tododatabase"  # Specify the database name here
@@ -30,4 +35,4 @@
     login_user: "{{ db_user }}"
     login_password: "{{ db_password }}"
     state: import
-    target: ./backend/create_database.sql  # SQL script to create the table
+    target: /tmp/create_database.sql
