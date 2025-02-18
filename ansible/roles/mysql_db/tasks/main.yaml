@@ -5,11 +5,11 @@
     state: present
   when: ansible_facts.packages['mariadb105'] is not defined
 
-- name: Create table
-  mysql_db:
+- name: Run SQL script
+  mysql_query:
     login_host: "{{ db_host }}"
     login_user: "{{ db_user }}"
     login_password: "{{ db_password }}"
-    state: import
-    target: /backend/create_database.sql
+    db: ""
+    query: "{{ lookup('file', '/backend/create_database.sql') }}"
   delegate_to: localhost
