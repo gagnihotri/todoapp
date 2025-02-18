@@ -11,5 +11,5 @@
     login_user: "{{ db_user }}"
     login_password: "{{ db_password }}"
     db: ""
-    query: "{{ lookup('file', '/backend/create_database.sql') }}"
+    query: "{{ lookup('file', '../backend/create_database.sql') }}"
   delegate_to: localhost
