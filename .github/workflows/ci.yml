@@ -223,7 +223,7 @@ jobs:
       - name: Run Ansible Playbook
         run: |
           ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yaml \
-            --extra-vars "db_host=${{ secrets.RDS_DB_ENDPOINT }} \
-              db_password=${{ secrets.RDS_DB_PASSWORD }}" \
-              db_user=${{ secrets.RDS_DB_USERNAME}}
+            --extra-vars "db_host=${{ secrets.RDS_DB_ENDPOINT }} /
+            db_password=${{ secrets.RDS_DB_PASSWORD }} /
+            db_user=${{ secrets.RDS_DB_USERNAME}}"
 
