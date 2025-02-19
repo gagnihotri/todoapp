@@ -38,6 +38,11 @@
     state: stopped
   ignore_errors: true
 
+- name: Create Docker Network
+  community.docker.docker_network:
+    name: app-network
+    driver: bridge
+
 - name: Run Frontend
   community.docker.docker_container:
     name: frontend-app
@@ -46,6 +51,8 @@
     restart_policy: always
     ports:
       - "4200:80"
+    networks:
+      - name: app-network
 
 - name: Run backend
   community.docker.docker_container:
@@ -55,3 +62,5 @@
     restart_policy: always
     ports:
       - "8080:8080"
+    networks:
+      - name: app-network
