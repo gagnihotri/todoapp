@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.HttpStatus;
 
-@CrossOrigin(origins = "http://frontend-app")
 @RestController
 public class TodoJpaResource {
     @Autowired
