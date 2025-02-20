@@ -1,0 +1,37 @@
+<h1>
+    My Todo's for {{ todos[0]?.username }}
+</h1>
+
+<div class="alert alert-success" *ngIf="message">{{ message }}</div>
+
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Target Date</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let todo of todos" [ngClass]="{'bg-light-green': todo.done}">
+                <td>{{ todo.id }}</td>
+                <td>{{ todo.description }}</td>
+                <td>{{ todo.done }}</td>
+                <td>{{ todo.targetDate | date }}</td>
+                <td>
+                    <button (click)="updateToDo(todo.id)" class="btn btn-success">Update</button>
+                </td>
+                <td>
+                    <button (click)="deleteToDo(todo.id, todo.description)" class="btn btn-warning">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="row">
+        <button (click)="addTodo()" class="btn btn-success">Add Task</button>
+    </div>
+</div>

@@ -1,0 +1,4 @@
+---
+db_host: "<RDS ENDPOINT>"
+db_user: "<USER NAME>"
+db_password: "<DB PASSWORD>"

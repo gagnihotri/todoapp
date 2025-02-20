@@ -1,0 +1,41 @@
+<ng-container *ngIf="todo.id > 0; else createTodo">
+    <h1>ToDo Update</h1>
+</ng-container>
+
+<ng-template #createTodo>
+    <h1>ToDo Create</h1>
+</ng-template>
+
+<div class="container">
+
+    <form (ngSubmit)="!todoForm.invalid && saveTodo()"  #todoForm="ngForm">
+        <fieldset class="form-group" *ngIf="todo.id != -1">
+            <label>ID</label>
+            <input type="text" [(ngModel)] = "todo.id" class="form-control" name="id" readonly="true">
+        </fieldset>
+
+        <fieldset class="form-group">
+            <label>Description</label>
+            <input type="text" #description="ngModel" [(ngModel)] = "todo.description" class="form-control" name="description" required="required" minlength="3">
+        </fieldset>
+        <div class="alert alert-warning" *ngIf="todoForm.dirty && description.invalid">Enter at least 3 charaters Description</div>
+        
+
+        <fieldset class="form-group">
+            <label>Target Date</label>
+            <input type="date" #targetDate="ngModel" [ngModel] = "todo.targetDate | date:'yyyy-MM-dd' " (ngModelChange) = "todo.targetDate = $event"  class="form-control" name="targetDate" required="required">
+        </fieldset>
+        <div class="alert alert-warning" *ngIf="todoForm.dirty && targetDate.invalid">Enter Valid Target Date</div>
+
+        <fieldset class="form-group">
+            <label>Status</label>
+            <select [(ngModel)]="todo.done" class="form-control" name="done">
+                <option [ngValue]="true">True</option>
+                <option [ngValue]="false">False</option>
+            </select>
+        </fieldset>
+        
+
+        <button type="submit" class="btn btn-success">Save</button>
+    </form>
+</div>
