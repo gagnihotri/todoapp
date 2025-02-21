@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.HttpStatus;
 
-@CrossOrigin(origins = "http://localhost:80")
+@CrossOrigin(origins = "*")
 @RestController
 public class TodoJpaResource {
     @Autowired
