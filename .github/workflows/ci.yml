@@ -167,7 +167,7 @@ jobs:
           mvn clean package -DskipTests
 
           docker build \
-            -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ VERSION }} \
+            -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ env.VERSION }} \
             -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }} \
             --build-arg RDS_DB_ENDPOINT="${{ secrets.RDS_DB_ENDPOINT }}" \
             --build-arg RDS_DB_PASSWORD="${{ secrets.RDS_DB_PASSWORD }}" \
