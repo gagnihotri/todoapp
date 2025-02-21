@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.springboot.rest.webservices</groupId>
 	<artifactId>todo-app</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>todo-app</name>
 	<description>Demo project for todo-app</description>
 	<properties>
