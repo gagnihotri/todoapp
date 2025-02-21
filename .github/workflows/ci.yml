@@ -136,6 +136,8 @@ jobs:
   package-backend:
     name: Package Backend
     runs-on: ubuntu-latest
+    outputs:
+      BACKEND_VERSION: ${{ steps.set-backend-version.outputs.VERSION }}
     #needs: sonar-analysis
     #if: false
     steps:
@@ -151,15 +153,22 @@ jobs:
       - name: Install Maven
         run: sudo apt-get install -y maven
 
+      - name: Backend Version
+        id: set-backend-version
+        run: |
+          cd backend/restful-web-services
+          echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+  
       - name: Build Backend Docker Image
         run: |
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
           cd backend/restful-web-services
           mvn clean package -DskipTests
+
           docker build \
+            -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ VERSION }} \
             -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }} \
-            -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:latest \
             --build-arg RDS_DB_ENDPOINT="${{ secrets.RDS_DB_ENDPOINT }}" \
             --build-arg RDS_DB_PASSWORD="${{ secrets.RDS_DB_PASSWORD }}" \
             --build-arg RDS_DB_USERNAME="${{ secrets.RDS_DB_USERNAME }}" \
@@ -167,12 +176,14 @@ jobs:
 
       - name: Push Backend Image to DockerHub
         run: |
+          docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ VERSION }}
           docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }}
-          docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:latest
 
   package-frontend:
     name: Package Frontend
     runs-on: ubuntu-latest
+    outputs:
+      APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
     #needs: sonar-analysis
     #if: false
     steps:
@@ -183,7 +194,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
+
+      - name: Frontend Version
+        run: echo "APP_VERSION=$(jq -r .version frontend/todo/package.json)" >> $GITHUB_ENV
+        id: app-version
+
       - name: Build Frontend Docker Image
         run: |
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
@@ -191,14 +206,14 @@ jobs:
           npm install
           npm run build --prod
           docker build \
+            -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ env.APP_VERSION }} \
             -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }} \
-            -t ${{ secrets.DOCKERHUB_REPO }}/frontend-app:latest \
             -f ../Dockerfile . 
 
       - name: Push Frontend Image to DockerHub
         run: |
+          docker push ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ env.APP_VERSION }}
           docker push ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }}
-          docker push ${{ secrets.DOCKERHUB_REPO }}/frontend-app:latest
 
   deploy:
     name: Deploy
@@ -225,5 +240,6 @@ jobs:
           ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yaml \
             --extra-vars "db_host=${{ secrets.RDS_DB_ENDPOINT }} /
             db_password=${{ secrets.RDS_DB_PASSWORD }} /
-            db_user=${{ secrets.RDS_DB_USERNAME}}"
-
+            db_user=${{ secrets.RDS_DB_USERNAME}} /
+            app_version=${{ needs.package-frontend.outputs.APP_VERSION}} /
+            backend_version=${{ needs.package-backend.outputs.BACKEND_VERSION}}"

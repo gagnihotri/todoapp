@@ -18,12 +18,12 @@
 
 - name: Pull Frontend image
   community.docker.docker_image:
-    name: gyanendranagarro/frontend-app:latest
+    name: gyanendranagarro/frontend-app:"{{ app_version}}"
     source: pull
 
 - name: Pull Backend image
   community.docker.docker_image:
-    name: gyanendranagarro/backend-app:latest
+    name: gyanendranagarro/backend-app:"{{backend_version}}"
     source: pull
 
 - name: Stop Frontend
@@ -46,7 +46,7 @@
 - name: Run Frontend
   community.docker.docker_container:
     name: frontend-app
-    image: gyanendranagarro/frontend-app:latest
+    image: gyanendranagarro/frontend-app:"{{ app_version}}"
     state: started
     restart_policy: always
     ports:
@@ -57,7 +57,7 @@
 - name: Run backend
   community.docker.docker_container:
     name: backend-app
-    image: gyanendranagarro/backend-app:latest
+    image: gyanendranagarro/backend-app:"{{backend_version}}"
     state: started
     restart_policy: always
     ports:
