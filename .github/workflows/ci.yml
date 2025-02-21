@@ -176,7 +176,7 @@ jobs:
 
       - name: Push Backend Image to DockerHub
         run: |
-          docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ VERSION }}
+          docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ env.VERSION }}
           docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }}
 
   package-frontend:
