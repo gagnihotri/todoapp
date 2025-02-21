@@ -137,7 +137,7 @@ jobs:
     name: Package Backend
     runs-on: ubuntu-latest
     outputs:
-      BACKEND_VERSION: ${{ steps.set-backend-version.outputs.VERSION }}
+      BACKEND_VERSION: ${{ steps.set-backend-version.outputs.BACKEND_VERSION }}
     #needs: sonar-analysis
     #if: false
     steps:
@@ -157,7 +157,9 @@ jobs:
         id: set-backend-version
         run: |
           cd backend/restful-web-services
-          echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "BACKEND_VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "BACKEND_VERSION=$VERSION" >> "$GITHUB_OUTPUT"
   
       - name: Build Backend Docker Image
         run: |
@@ -167,7 +169,7 @@ jobs:
           mvn clean package -DskipTests
 
           docker build \
-            -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ env.VERSION }} \
+            -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ env.BACKEND_VERSION }} \
             -t ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }} \
             --build-arg RDS_DB_ENDPOINT="${{ secrets.RDS_DB_ENDPOINT }}" \
             --build-arg RDS_DB_PASSWORD="${{ secrets.RDS_DB_PASSWORD }}" \
@@ -176,7 +178,7 @@ jobs:
 
       - name: Push Backend Image to DockerHub
         run: |
-          docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ env.VERSION }}
+          docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ env.BACKEND_VERSION }}
           docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }}
 
   package-frontend:
@@ -196,8 +198,12 @@ jobs:
           node-version: '18'
 
       - name: Frontend Version
-        run: echo "APP_VERSION=$(jq -r .version frontend/todo/package.json)" >> $GITHUB_ENV
         id: app-version
+        run: |
+          APP_VERSION=$(jq -r .version frontend/todo/package.json)
+          echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_ENV"
+          echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_OUTPUT"
+
 
       - name: Build Frontend Docker Image
         run: |
