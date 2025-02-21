@@ -234,6 +234,11 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+  
+      - name: Debug Outputs
+        run: |
+          echo "APP_VERSION=${{ needs.package-frontend.outputs.APP_VERSION }}"
+          echo "BACKEND_VERSION=${{ needs.package-backend.outputs.BACKEND_VERSION }}"
 
       - name: Run Ansible Playbook
         run: |
