@@ -195,7 +195,7 @@ jobs:
         with:
           node-version: '18'
       
-      -name: Frontend Version
+      - name: Frontend Version
         run: echo "APP_VERSION=$(jq -r .version frontend/todo/package.json)" >> $GITHUB_ENV
         id: app-version
 
