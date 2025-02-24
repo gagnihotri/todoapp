@@ -7,6 +7,8 @@ jobs:
   package-frontend:
     name: Build & push Frontend image
     runs-on: ubuntu-latest
+    outputs:
+      APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -67,6 +69,8 @@ jobs:
   package-backend:
     name: Build & push Backend image
     runs-on: ubuntu-latest
+    outputs:
+      BACKEND_VERSION: ${{ steps.backend-version.outputs.BACKEND_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -124,9 +128,6 @@ jobs:
             RDS_DB_ENDPOINT=${{ secrets.RDS_DB_ENDPOINT }}
             RDS_DB_PASSWORD=${{ secrets.RDS_DB_PASSWORD }}
             RDS_DB_USERNAME=${{ secrets.RDS_DB_USERNAME }}
-
-    outputs:
-      BACKEND_VERSION: ${{ steps.backend-version.outputs.BACKEND_VERSION }}
 
   deploy:
     name: Trigger Deploy

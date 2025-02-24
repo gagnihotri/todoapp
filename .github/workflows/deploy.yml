@@ -66,6 +66,6 @@ jobs:
           ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yaml \
             --extra-vars "db_host=${{ secrets.RDS_DB_ENDPOINT }} /
             db_password=${{ secrets.RDS_DB_PASSWORD }} /
-            db_user=${{ secrets.RDS_DB_USERNAME}} /
-            app_version=${{ inputs.APP_VERSION}} /
-            backend_version=${{ inputs.BACKEND_VERSION}}"
+            db_user=${{ secrets.RDS_DB_USERNAME }} /
+            app_version=${{ inputs.APP_VERSION }} /
+            backend_version=${{ inputs.BACKEND_VERSION }}"
