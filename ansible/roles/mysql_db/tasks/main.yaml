@@ -5,9 +5,7 @@
     state: present
 
 - name: Install MySQL Ansible Collection
-  ansible.builtin.shell: ansible-galaxy collection install community.mysql
-  args:
-    creates: ~/.ansible/collections/ansible_collections/community/mysql
+  run: ansible-galaxy collection install community.mysql
 
 - name: Create MySQL Database
   community.mysql.mysql_db:
