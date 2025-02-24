@@ -52,7 +52,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and Push Backend Image
-        uses: docker/build-push-action@6
+        uses: docker/build-push-action@5
         with:
           context: backend/restful-web-services
           file: backend/restful-web-services/Dockerfile
@@ -118,7 +118,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and Push Frontend Image
-        uses: docker/build-push-action@6
+        uses: docker/build-push-action@5
         with:
           context: frontend/todo
           file: frontend/todo/Dockerfile
