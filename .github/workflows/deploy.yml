@@ -9,6 +9,17 @@ on:
       BACKEND_VERSION:
         required: true
         type: string
+    secrets:
+      EC2_HOST:
+        required: true
+      SSH_PRIVATE_KEY:
+        required: true
+      RDS_DB_ENDPOINT:
+        required: true
+      RDS_DB_USERNAME:
+        required: true
+      RDS_DB_PASSWORD:
+        required: true
 
 jobs:
   deploy:

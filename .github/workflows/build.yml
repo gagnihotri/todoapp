@@ -135,18 +135,12 @@ jobs:
     with:
       APP_VERSION: ${{ needs.package-frontend.outputs.APP_VERSION }}
       BACKEND_VERSION: ${{ needs.package-backend.outputs.BACKEND_VERSION }}
-    secrets:
-      EC2_HOST:
-        required: true
-      SSH_PRIVATE_KEY:
-        required: true
-      RDS_DB_ENDPOINT:
-        required: true
-      RDS_DB_USERNAME:
-        required: true
-      RDS_DB_PASSWORD:
-        required: true
-
+    secrets: 
+    EC2_HOST: ${{ secrets.EC2_HOST }}
+    SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    RDS_DB_ENDPOINT: ${{ secrets.RDS_DB_ENDPOINT }}
+    RDS_DB_USERNAME: ${{ secrets.RDS_DB_USERNAME }}
+    RDS_DB_PASSWORD: ${{ secrets.RDS_DB_PASSWORD }}
 
   sonar-analysis:
     name: SonarQube Analysis
