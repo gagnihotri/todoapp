@@ -37,6 +37,7 @@ jobs:
           path: backend/restful-web-services/target/classes    
 
       - name: Build Backend
+        id: backend-version
         run: |
           cd backend/restful-web-services
           mvn clean package -DskipTests
@@ -66,7 +67,7 @@ jobs:
             RDS_DB_USERNAME=${{ secrets.RDS_DB_USERNAME }}
 
     outputs:
-      BACKEND_VERSION: ${{ steps.set-backend-version.outputs.BACKEND_VERSION }}
+      BACKEND_VERSION: ${{ steps.backend-version.outputs.BACKEND_VERSION }}
 
   package-frontend:
     name: Build & push Frontend image
@@ -103,6 +104,7 @@ jobs:
           path: frontend/todo/coverage
       
       - name: Build Frontend
+        id: app-version
         run: |
           cd frontend/todo
           npm run build --prod
