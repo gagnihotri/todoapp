@@ -1,0 +1,47 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["Build_pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+
+      - name: Install Ansible AWS collection
+        run: ansible-galaxy collection install amazon.aws
+
+      - name: Install AWS dependencies
+        run: pip install boto3 botocore
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Debug Outputs
+        run: |
+          echo "APP_VERSION=${{ needs.package-frontend.outputs.APP_VERSION }}"
+          echo "BACKEND_VERSION=${{ needs.package-backend.outputs.BACKEND_VERSION }}"
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yaml \
+            --extra-vars "db_host=${{ secrets.RDS_DB_ENDPOINT }} /
+            db_password=${{ secrets.RDS_DB_PASSWORD }} /
+            db_user=${{ secrets.RDS_DB_USERNAME}} /
+            app_version=${{ needs.package-frontend.outputs.APP_VERSION}} /
+            backend_version=${{ needs.package-backend.outputs.BACKEND_VERSION}}"
