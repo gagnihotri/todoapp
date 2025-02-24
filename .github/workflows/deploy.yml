@@ -1,18 +1,18 @@
-name: Deploy
+name: Deploy pipeline
 
 on:
   workflow_call:
     inputs:
-      - APP_VERSION:
+      APP_VERSION:
         required: true
         type: string
-      - BACKEND_VERSION:
+      BACKEND_VERSION:
         required: true
         type: string
 
 jobs:
   deploy:
-    name: SonarQube Analysis
+    name: Deploy build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
