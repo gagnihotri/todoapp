@@ -34,12 +34,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          if nc -z -v -w5 ${{ secrets.EC2_HOST }} 22; then
-            ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-          else
-            echo "Error: Cannot reach EC2_HOST (${{ secrets.EC2_HOST }}) on port 22"
-            exit 1
-          fi
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Debug Outputs
         run: |
