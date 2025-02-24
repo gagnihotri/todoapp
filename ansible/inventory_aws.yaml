@@ -1,0 +1,20 @@
+plugin: amazon.aws.aws_ec2
+regions:
+  - us-east-1
+
+filters:
+  tag:k8s-role:
+    - controller
+    - worker
+  instance-state-name: "running"
+
+keyed_groups:
+  - key: tags.k8s-role
+    prefix: "k8s"
+
+compose:
+  ansible_host: instance_id
+
+hostvars:
+  ansible_connection: amazon.aws.ssm
+  ansible_user: ec2-user
