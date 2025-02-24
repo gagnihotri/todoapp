@@ -35,7 +35,9 @@ jobs:
           sudo apt install -y ansible
 
       - name: Install Ansible AWS collection
-        run: ansible-galaxy collection install amazon.aws
+        run: |
+          ansible-galaxy collection install community.mysql
+          ansible-galaxy collection install amazon.aws
 
       - name: Install AWS dependencies
         run: pip install boto3 botocore
