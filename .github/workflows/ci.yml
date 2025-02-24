@@ -45,7 +45,7 @@ jobs:
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "BACKEND_VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "BACKEND_VERSION=$VERSION" >> "$GITHUB_OUTPUT"
-  
+
       - name: Build Backend Docker Image
         run: |
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
@@ -65,6 +65,8 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ env.BACKEND_VERSION }}
           docker push ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ github.sha }}
+    outputs:
+      BACKEND_VERSION: ${{ steps.set-backend-version.outputs.BACKEND_VERSION }}
 
   package-frontend:
     name: Build & push Frontend image
@@ -115,6 +117,8 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ env.APP_VERSION }}
           docker push ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ github.sha }}
+    outputs:
+      APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
 
   sonar-analysis:
     name: SonarQube Analysis
