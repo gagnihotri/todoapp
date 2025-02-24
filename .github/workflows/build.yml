@@ -137,7 +137,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: call deploy workflow
-        uses: ./.github/workflows/deploy.yml
+        uses: gagnihotri/todoapp/.github/workflows/deploy.yml&${{ github.ref_name }}
         with: 
           APP_VERSION: ${{ needs.package-frontend.outputs.APP_VERSION }}
           BACKEND_VERSION: ${{ needs.package-backend.outputs.BACKEND_VERSION }}
