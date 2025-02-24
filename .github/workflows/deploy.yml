@@ -1,10 +1,14 @@
 name: Deploy
 
 on:
-  workflow_run:
-    workflows: ["Build_pipeline"]
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      - APP_VERSION:
+        required: true
+        type: string
+      - BACKEND_VERSION:
+        required: true
+        type: string
 
 jobs:
   deploy:
@@ -34,8 +38,8 @@ jobs:
 
       - name: Debug Outputs
         run: |
-          echo "APP_VERSION=${{ needs.package-frontend.outputs.APP_VERSION }}"
-          echo "BACKEND_VERSION=${{ needs.package-backend.outputs.BACKEND_VERSION }}"
+          echo "APP_VERSION=${{ inputs.APP_VERSION }}"
+          echo "BACKEND_VERSION=${{ inputs.BACKEND_VERSION }}"
 
       - name: Run Ansible Playbook
         run: |
@@ -43,5 +47,5 @@ jobs:
             --extra-vars "db_host=${{ secrets.RDS_DB_ENDPOINT }} /
             db_password=${{ secrets.RDS_DB_PASSWORD }} /
             db_user=${{ secrets.RDS_DB_USERNAME}} /
-            app_version=${{ needs.package-frontend.outputs.APP_VERSION}} /
-            backend_version=${{ needs.package-backend.outputs.BACKEND_VERSION}}"
+            app_version=${{ inputs.APP_VERSION}} /
+            backend_version=${{ inputs.BACKEND_VERSION}}"
