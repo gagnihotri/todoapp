@@ -130,7 +130,6 @@ jobs:
 
   deploy:
     name: Trigger Deploy
-    runs-on: ubuntu-latest
     needs: [package-backend, package-frontend]
     uses: gagnihotri/todoapp/.github/workflows/deploy.yml@master
     with:
