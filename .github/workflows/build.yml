@@ -132,13 +132,19 @@ jobs:
     name: trigger deploy
     runs-on: ubuntu-latest
     needs: [package-backend, package-frontend]
-    uses: ./.github/workflows/deploy.yml
-    with: 
-      APP_VERSION: ${{ needs.package-frontend.outputs.APP_VERSION }}
-      BACKEND_VERSION: ${{ needs.package-backend.outputs.BACKEND_VERSION }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: call deploy workflow
+        uses: ./.github/workflows/deploy.yml
+        with: 
+          APP_VERSION: ${{ needs.package-frontend.outputs.APP_VERSION }}
+          BACKEND_VERSION: ${{ needs.package-backend.outputs.BACKEND_VERSION }}
 
   sonar-analysis:
     name: SonarQube Analysis
+    runs-on: ubuntu-latest
     needs: [package-backend, package-frontend]
     steps:
       - name: Checkout code
