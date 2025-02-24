@@ -107,7 +107,7 @@ jobs:
           cd frontend/todo
           npm run build --prod
 
-          APP_VERSION=$(jq -r .version frontend/todo/package.json)
+          APP_VERSION=$(jq -r .version package.json)
           echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_ENV"
           echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_OUTPUT"          
 
