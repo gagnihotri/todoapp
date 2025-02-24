@@ -55,7 +55,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: backend/restful-web-services
-          file: backend/restful-web-services/Dockerfile
+          file: backend/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_REPO }}/backend-app:${{ env.BACKEND_VERSION }}
@@ -121,7 +121,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: frontend/todo
-          file: frontend/todo/Dockerfile
+          file: frontend/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_REPO }}/frontend-app:${{ env.APP_VERSION }}
