@@ -29,6 +29,15 @@ jobs:
       - name: Install AWS dependencies
         run: pip install boto3 botocore
 
+      - name: debug secrets
+        run: |
+          if [ -z "${{ secrets.EC2_HOST }}" ]; then
+            echo "❌ Error: EC2_HOST is not set."
+            exit 1
+          else
+            echo "✅ EC2_HOST is set to '${{ secrets.EC2_HOST }}'"
+          fi
+
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
