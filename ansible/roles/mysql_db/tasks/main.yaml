@@ -3,14 +3,11 @@
   ansible.builtin.pip:
     name: pymysql
     state: present
-
-- name: Create MySQL Database
-  community.mysql.mysql_db:
-    name: tododatabase
-    login_host: "{{ db_host }}"
-    login_user: "{{ db_user }}"
-    login_password: "{{ db_password }}"
-    state: present
+  
+- name: Copy SQL file to target host
+  ansible.builtin.copy:
+    src: ../backend/create_database.sql
+    dest: /tmp/create_database.sql
 
 - name: Import SQL File
   community.mysql.mysql_db:
