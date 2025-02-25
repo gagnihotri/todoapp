@@ -28,7 +28,7 @@ module "k8s-cluster" {
   ec2_ami              = var.ec2_ami
   public_subnet_id     = module.network.public_subnet_id
   private_subnet_id    = module.network.private_subnet_id
-  bastion_sg_id        = module.network.bastion_sg_id
+  bastion_sg_id        = module.security.bastion_sg_id
   sg_id                = module.security.sg_id
   iam_instance_profile = module.iam.iam_instance_profile
 }
