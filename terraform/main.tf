@@ -11,7 +11,7 @@ module "security" {
   source   = "./modules/security-groups"
 
   vpc_id   = module.network.vpc_id
-  private_subnet_id    = module.network.private_subnet_id
+  private_subnet_cidr    = var.private_subnet_cidr
 }
 
 module "iam" {

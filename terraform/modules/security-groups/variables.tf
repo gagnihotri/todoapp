@@ -3,7 +3,7 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "private_subnet_id" {
+variable "private_subnet_cidr" {
   description = "The ID of the private subnet for private resources"
   type        = string
 }

@@ -27,7 +27,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"
-    cidr_blocks = [var.private_subnet_id]
+    cidr_blocks = [var.private_subnet_cidr]
   }
 
   egress {
