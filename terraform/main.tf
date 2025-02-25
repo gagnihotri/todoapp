@@ -5,7 +5,6 @@ module "network" {
   vpc_cidr_block      = vpc_cidr_block
   public_subnet_cidr  = var.public_subnet_cidr
   private_subnet_cidr = var.private_subnet_cidr
-
 }
 
 module "security" {
