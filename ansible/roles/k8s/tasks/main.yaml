@@ -1,0 +1,23 @@
+- name: Install Kubernetes on Control Plane
+  hosts: k8s-controller
+  become: yes
+  tasks:
+    - name: Install kubeadm, kubelet, and kubectl
+      yum:
+        name: 
+          - kubeadm
+          - kubelet
+          - kubectl
+        state: present
+
+- name: Join Worker Node to Cluster
+  hosts: k8s-worker
+  become: yes
+  tasks:
+    - name: Fetch join command from Control Plane
+      command: cat /tmp/k8s_join_command.sh
+      register: join_cmd
+      delegate_to: tag_Name_k8s-control-plane
+
+    - name: Execute join command
+      command: "{{ join_cmd.stdout }}"

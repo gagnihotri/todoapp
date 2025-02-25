@@ -20,6 +20,8 @@ on:
         required: true
       RDS_DB_PASSWORD:
         required: true
+      PIPELINE_ROLE:
+        required: true
 
 jobs:
   deploy:
@@ -42,32 +44,20 @@ jobs:
       - name: Install AWS dependencies
         run: pip install boto3 botocore
 
-      - name: debug secrets
-        run: |
-          if [ -z "${{ secrets.EC2_HOST }}" ]; then
-            echo "❌ Error: EC2_HOST is not set."
-            exit 1
-          else
-            echo "✅ EC2_HOST is set to '${{ secrets.EC2_HOST }}'"
-          fi
+      - name: Terraform setup
+        uses: hashicorp/setup-terraform@v3
+        with:
+        terraform_version: "1.10.0"
 
-      - name: Setup SSH Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+      - name: Configure AWS Credentials for China region audience
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          audience: sts.amazonaws.com.cn
+          aws-region: us-east-3
+          role-to-assume: ${{ secrets.PIPELINE_ROLE }}
 
-      - name: Debug Outputs
+      - name: Terraform plan
         run: |
-          echo "APP_VERSION=${{ inputs.APP_VERSION }}"
-          echo "BACKEND_VERSION=${{ inputs.BACKEND_VERSION }}"
-
-      - name: Run Ansible Playbook
-        run: |
-          ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yaml \
-            --extra-vars "db_host=${{ secrets.RDS_DB_ENDPOINT }} /
-            db_password=${{ secrets.RDS_DB_PASSWORD }} /
-            db_user=${{ secrets.RDS_DB_USERNAME }} /
-            app_version=${{ inputs.APP_VERSION }} /
-            backend_version=${{ inputs.BACKEND_VERSION }}"
+          cd terraform
+          terraform init
+          terraform plan
