@@ -2,7 +2,7 @@ module "network" {
   source              = "./modules/network"
 
   availability_zone   = var.availability_zone
-  vpc_cidr_block      = vpc_cidr_block
+  vpc_cidr_block      = var.vpc_cidr_block
   public_subnet_cidr  = var.public_subnet_cidr
   private_subnet_cidr = var.private_subnet_cidr
 }

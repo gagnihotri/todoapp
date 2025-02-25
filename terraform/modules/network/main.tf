@@ -1,9 +1,14 @@
 resource "aws_vpc" "k8s_vpc" {
   cidr_block = var.vpc_cidr_block
+  enable_dns_support   = true
+
+  tags = {
+    Name        = "Kubernetes VPC"
+  }
 }
 
 resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.k8s_vpc.id
 
   tags = {
     Name = "Internet Gateway"
@@ -11,7 +16,7 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_subnet" "public_subnet" {
-  vpc_id                  = aws_vpc.main.id
+  vpc_id                  = aws_vpc.k8s_vpc.id
   cidr_block              = var.public_subnet_cidr
   map_public_ip_on_launch = true
   availability_zone       = var.availability_zone
@@ -59,7 +64,7 @@ resource "aws_route_table" "private_rt" {
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat.id
+    nat_gateway_id = aws_nat_gateway.nat_gateway.id
   }
 
   tags = {

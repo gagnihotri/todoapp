@@ -1,5 +1,5 @@
 output "vpc_id" {
-  value = aws_vpc.main.id
+  value = aws_vpc.k8s_vpc.id
 }
 
 output "public_subnet_id" {
