@@ -23,8 +23,6 @@ resource "aws_instance" "controller" {
     Name = "k8s-controller",
     k8s-role = "controller"
   }
-
-  user_data = file("${path.module}/controller.sh")
 }
 
 resource "aws_instance" "worker" {
@@ -39,8 +37,4 @@ resource "aws_instance" "worker" {
     Name = "k8s-worker",
     k8s-role = "worker"
   }
-
-  user_data = templatefile("${path.module}/worker.sh", {
-    controller_private_ip = aws_instance.controller.private_ip
-  })
 }

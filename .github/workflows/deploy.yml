@@ -53,7 +53,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           audience: sts.amazonaws.com.cn
-          aws-region: us-east-3
+          aws-region: us-east-1
           role-to-assume: ${{ secrets.PIPELINE_ROLE }}
 
       - name: Terraform plan
