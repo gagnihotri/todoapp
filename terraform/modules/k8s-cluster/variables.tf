@@ -19,10 +19,6 @@ variable "private_key" {
   description = "private key"
   type        = string
   sensitive   = true
-  validation {
-    condition     = length(var.private_key) > 0
-    error_message = "The private key cannot be empty. Ensure that Secrets Manager is configured properly."
-  }
 }
 
 variable "key_name" {
@@ -38,4 +34,8 @@ variable "iam_instance_profile" {
 variable "worker_instance_count" {
   type    = number
   default = 1
+}
+
+locals {
+  private_key = jsondecode(data.aws_secretsmanager_secret_version.private_key_version.secret_string)["ec2-key"]
 }

@@ -14,7 +14,7 @@ resource "aws_instance" "bastion" {
 
 resource "local_sensitive_file" "private_key" {
   content  = var.private_key
-  filename = "${path.module}/ec2-private-key.pem"
+  filename = "${path.root}/ec2-private-key.pem"
   file_permission = "0600"
 }
 
@@ -30,11 +30,11 @@ resource "aws_instance" "master" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file("${path.module}/ec2-private-key.pem")
+    private_key = local.private_key
     host        = self.private_ip
     bastion_host = aws_instance.bastion.public_ip
     bastion_user = "ec2-user"
-    bastion_private_key = file("${path.module}/ec2-private-key.pem")
+    bastion_private_key = local.private_key
   }
 
   provisioner "remote-exec" {
