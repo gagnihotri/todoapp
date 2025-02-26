@@ -31,6 +31,7 @@ jobs:
           cd terraform
           terraform -v
           terraform init --upgrade
+          terraform providers lock
           terraform plan -out=tfplan
 
       - name: Apply Terraform
