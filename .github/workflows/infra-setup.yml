@@ -30,6 +30,8 @@ jobs:
         run: |
           cd terraform
           terraform -v
+          ls -ls
+          rm .terrafrom.locl.hcl
           terraform init --upgrade
           terraform providers lock
           terraform plan -out=tfplan
