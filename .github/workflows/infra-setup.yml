@@ -30,10 +30,9 @@ jobs:
         run: |
           cd terraform
           terraform -v
-          ls -ls
-          rm .terrafrom.locl.hcl
-          terraform init --upgrade
-          terraform providers lock
+          terraform init
+          terraform validate
+          terraform providers
           terraform plan -out=tfplan
 
       - name: Apply Terraform
