@@ -57,7 +57,7 @@ jobs:
           path: .
       
       - name: Apply Terraform Plan
-        run: terraform apply terraform/tfplan
+        run: terraform apply terraform-plan/tfplan
 
   ansible:
     name: Deploy build
