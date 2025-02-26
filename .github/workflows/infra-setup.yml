@@ -34,9 +34,7 @@ jobs:
           terraform validate
           terraform providers
           terraform plan -out=tfplan
-
-      - name: Apply Terraform
-        run: terraform apply terraform/tfplan
+          terraform apply tfplan
 
   ansible:
     name: Deploy build
