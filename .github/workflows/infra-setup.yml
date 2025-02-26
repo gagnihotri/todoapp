@@ -29,12 +29,14 @@ jobs:
       - name: Terraform plan
         run: |
           cd terraform
-          terraform -v
           terraform init
-          terraform validate
-          terraform providers
           terraform plan -out=tfplan
+
+      - name: Terraplan apply
+        run: |
+          cd terraform
           terraform apply tfplan
+
 
   ansible:
     name: Deploy build
