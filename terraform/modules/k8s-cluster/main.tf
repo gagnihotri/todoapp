@@ -25,11 +25,11 @@ resource "aws_instance" "master" {
   subnet_id     = var.subnet["private"]
   vpc_security_group_ids  = [var.sg["master"]]
   iam_instance_profile = var.iam_instance_profile
-  depends_on = [ aws_instance.bastion ]
+  depends_on = [ aws_instance.bastion, local_file.private_key ]
 
   connection {
     type        = "ssh"
-    user        = "ec2-user"
+    user        = "ubuntu"
     private_key = file(local_file.private_key.filename)
     host        = self.private_ip
     bastion_host = aws_instance.bastion.public_ip
@@ -40,7 +40,7 @@ resource "aws_instance" "master" {
 
   provisioner "file" {
     source      = "./master.sh"
-    destination = "./master.sh"
+    destination = "/home/ubuntu/master.sh"
   }
 
   provisioner "remote-exec" {
