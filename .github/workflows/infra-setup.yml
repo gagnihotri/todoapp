@@ -26,9 +26,7 @@ jobs:
         with:
           role-to-assume: ${{ secrets.PIPELINE_ROLE }}
           aws-region: us-east-1
-          web-identity-token-file: ${{ github.token }}
           audience: sts.amazonaws.com
-          
 
       - name: Terraform plan
         run: |
