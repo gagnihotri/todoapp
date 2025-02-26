@@ -32,7 +32,7 @@ jobs:
         run: |
           cd terraform
           terraform init
-          terraform plan -out=tfplan
+          terraform plan -out=$(pwd)/tfplan
 
       - name: Save Terraform Plan
         uses: actions/upload-artifact@v4
