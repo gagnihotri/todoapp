@@ -1,7 +1,9 @@
 name: Infra pipeline
 
 on:
-  workflow_dispatch
+  push:
+    branches:
+      - master
 
 jobs:
   terraform-plan:
@@ -43,7 +45,7 @@ jobs:
       - name: Terraform setup
         uses: hashicorp/setup-terraform@v3
         with:
-        terraform_version: "1.10.0"
+          terraform_version: "1.10.0"
       
       - name: Download Terraform Plan
         uses: actions/download-artifact@v4
