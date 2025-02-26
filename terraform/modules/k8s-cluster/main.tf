@@ -6,6 +6,13 @@ resource "aws_instance" "master" {
   vpc_security_group_ids  = [var.sg["master"]]
   iam_instance_profile = var.iam_instance_profile
 
+  connection {
+    type        = "ssh"
+    user        = "ec2-user"
+    private_key = var.private_key
+    host        = self.public_ip
+  }
+
   provisioner "file" {
     source      = "./master.sh"
     destination = "./master.sh"
