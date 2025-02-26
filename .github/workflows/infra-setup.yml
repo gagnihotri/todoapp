@@ -55,7 +55,12 @@ jobs:
         with:
           name: terraform-plan
           path: .
-      
+
+      - name: list 
+        run: |
+          | ls -la
+            ls -la terraform-plan
+        
       - name: Apply Terraform Plan
         run: terraform apply terraform-plan/tfplan
 
