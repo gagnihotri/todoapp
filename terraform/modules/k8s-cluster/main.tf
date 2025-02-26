@@ -3,7 +3,7 @@ resource "aws_instance" "bastion" {
   instance_type = var.instance_type["bation"]
   key_name      = var.key_name
   subnet_id     = var.public_subnet_id
-  security_groups = [var.bastion_sg_id]
+  vpc_security_group_ids  = [var.bastion_sg_id]
   associate_public_ip_address = true
 
   tags = {
@@ -16,7 +16,7 @@ resource "aws_instance" "master" {
   instance_type = var.instance_type["master"]
   key_name      = var.key_name
   subnet_id     = var.private_subnet_id
-  security_groups = [var.sg_id]
+  vpc_security_group_ids  = [var.sg_id]
   iam_instance_profile = var.iam_instance_profile
 
   tags = {
@@ -32,7 +32,7 @@ resource "aws_instance" "worker" {
   instance_type = var.instance_type["worker"]
   key_name      = var.key_name
   subnet_id     = var.private_subnet_id
-  security_groups = [var.sg_id]
+  vpc_security_group_ids  = [var.sg_id]
   iam_instance_profile = var.iam_instance_profile
 
   tags = {
