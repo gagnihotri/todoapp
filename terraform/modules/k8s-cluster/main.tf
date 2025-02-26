@@ -12,7 +12,6 @@ resource "aws_instance" "bastion" {
 }
 
 resource "aws_instance" "master" {
-  dependon
   ami           = var.ami["master"]
   instance_type = var.instance_type["master"]
   key_name      = var.key_name
