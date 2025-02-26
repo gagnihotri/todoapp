@@ -55,6 +55,13 @@ jobs:
         with:
           name: terraform-plan
           path: .
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.PIPELINE_ROLE }}
+          aws-region: us-east-1
+          audience: sts.amazonaws.com
 
       - name: Apply Terraform Plan
         run: terraform apply tfplan
