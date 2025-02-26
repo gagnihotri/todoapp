@@ -36,6 +36,3 @@ variable "worker_instance_count" {
   default = 1
 }
 
-locals {
-  private_key = jsondecode(data.aws_secretsmanager_secret_version.private_key_version.secret_string)["ec2-key"]
-}
