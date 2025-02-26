@@ -18,6 +18,11 @@ variable "sg" {
 variable "private_key" {
   description = "private key"
   type        = string
+  sensitive   = true
+  validation {
+    condition     = length(var.private_key) > 0
+    error_message = "The private key cannot be empty. Ensure that Secrets Manager is configured properly."
+  }
 }
 
 variable "key_name" {

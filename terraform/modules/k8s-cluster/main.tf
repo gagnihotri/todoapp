@@ -12,7 +12,7 @@ resource "aws_instance" "bastion" {
   }
 }
 
-resource "local_file" "private_key" {
+resource "local_sensitive_file" "private_key" {
   sensitive_content  = var.private_key
   filename = "${path.module}/ec2-private-key.pem"
   file_permission = "0600"
