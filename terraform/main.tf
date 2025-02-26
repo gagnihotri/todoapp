@@ -26,7 +26,7 @@ module "k8s-cluster" {
   instance_type        = var.instance_type
   ami                  = var.ami
   key_name             = var.key_name
-  iam_instance_profile = module.iam.iam_instance_profile_name
+  iam_instance_profile = module.iam.iam_instance_profile
 
   subnet = {
     private = module.network.private_subnet_id

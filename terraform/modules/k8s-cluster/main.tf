@@ -1,16 +1,3 @@
-resource "aws_instance" "bastion" {
-  ami           = var.ami["bastion"]
-  instance_type = var.instance_type["bastion"]
-  key_name      = var.key_name
-  subnet_id     = var.subnet["public"]
-  vpc_security_group_ids  = [var.sg["bastion"]]
-  associate_public_ip_address = true
-
-  tags = {
-    Name = "k8s-bastion"
-  }
-}
-
 resource "aws_instance" "master" {
   ami           = var.ami["master"]
   instance_type = var.instance_type["master"]
