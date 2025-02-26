@@ -1,7 +1,7 @@
 name: Build_pipeline
+
 on:
-  push:
-    branches: [master]
+  workflow_dispatch
 
 jobs:
   package-frontend:
@@ -130,22 +130,7 @@ jobs:
             RDS_DB_ENDPOINT=${{ secrets.RDS_DB_ENDPOINT }}
             RDS_DB_PASSWORD=${{ secrets.RDS_DB_PASSWORD }}
             RDS_DB_USERNAME=${{ secrets.RDS_DB_USERNAME }}
-
-  deploy:
-    name: Trigger Deploy
-    # needs: [package-backend, package-frontend]
-    uses: gagnihotri/todoapp/.github/workflows/deploy.yml@master
-    with:
-      APP_VERSION: ${{ needs.package-frontend.outputs.APP_VERSION }}
-      BACKEND_VERSION: ${{ needs.package-backend.outputs.BACKEND_VERSION }}
-    secrets: 
-      EC2_HOST: ${{ secrets.EC2_HOST }}
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      RDS_DB_ENDPOINT: ${{ secrets.RDS_DB_ENDPOINT }}
-      RDS_DB_USERNAME: ${{ secrets.RDS_DB_USERNAME }}
-      RDS_DB_PASSWORD: ${{ secrets.RDS_DB_PASSWORD }}
-      PIPELINE_ROLE: ${{ secrets.PIPELINE_ROLE }}
-
+  
   sonar-analysis:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
@@ -201,3 +186,18 @@ jobs:
             echo "✅ Quality Gate Passed!"
           fi
         shell: bash
+  
+  deploy:
+    name: Trigger ansible
+    # needs: [terraform]
+    uses: gagnihotri/todoapp/.github/workflows/deploy.yml@master
+    with:
+      APP_VERSION: ${{ needs.package-frontend.outputs.APP_VERSION }}
+      BACKEND_VERSION: ${{ needs.package-backend.outputs.BACKEND_VERSION }}
+    secrets: 
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      RDS_DB_ENDPOINT: ${{ secrets.RDS_DB_ENDPOINT }}
+      RDS_DB_USERNAME: ${{ secrets.RDS_DB_USERNAME }}
+      RDS_DB_PASSWORD: ${{ secrets.RDS_DB_PASSWORD }}
+      PIPELINE_ROLE: ${{ secrets.PIPELINE_ROLE }}

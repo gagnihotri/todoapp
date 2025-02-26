@@ -1,0 +1,78 @@
+name: Infra pipeline
+
+on:
+  workflow_dispatch
+
+jobs:
+  terraform-plan:
+    name: Terraform plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Terraform setup
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.10.0"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          audience: sts.amazonaws.com.cn
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.PIPELINE_ROLE }}
+
+      - name: Terraform plan
+        run: |
+          cd terraform
+          terraform init
+          terraform plan -out=tfplan
+
+      - name: Save Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: tfplan
+  
+  terraform-apply:
+    name: terraform apply
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Terraform setup
+        uses: hashicorp/setup-terraform@v3
+        with:
+        terraform_version: "1.10.0"
+      
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
+          path: .
+      
+      - name: Apply Terraform Plan
+        run: terraform apply tfplan
+
+  ansible:
+    name: Deploy build
+    runs-on: ubuntu-latest
+    needs: [terraform-apply]
+    if: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+
+      - name: Install Ansible AWS collection
+        run: |
+          ansible-galaxy collection install community.mysql
+          ansible-galaxy collection install amazon.aws
+
+      - name: Install AWS dependencies
+        run: pip install boto3 botocore
+
