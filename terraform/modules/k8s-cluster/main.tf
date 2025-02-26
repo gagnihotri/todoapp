@@ -27,14 +27,15 @@ resource "aws_instance" "master" {
   iam_instance_profile = var.iam_instance_profile
   depends_on = [ aws_instance.bastion ]
 
+
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = local_sensitive_file.private_key.content
+    private_key = file(local_sensitive_file.private_key.filename)
     host        = self.private_ip
     bastion_host = aws_instance.bastion.public_ip
     bastion_user = "ec2-user"
-    bastion_private_key = local_sensitive_file.private_key.content
+    bastion_private_key = file(local_sensitive_file.private_key.filename)
   }
 
   provisioner "remote-exec" {
