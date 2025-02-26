@@ -41,6 +41,17 @@ resource "aws_instance" "master" {
   provisioner "file" {
     source      = "./master.sh"
     destination = "/home/ubuntu/master.sh"
+
+    connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = file(local_sensitive_file.private_key.filename)
+    host        = self.private_ip
+    bastion_host = aws_instance.bastion.public_ip
+    bastion_user = "ec2-user"
+    bastion_private_key = file(local_sensitive_file.private_key.filename)
+    script_path = "./master.sh"
+  }
   }
 
   provisioner "remote-exec" {
