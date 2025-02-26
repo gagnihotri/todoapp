@@ -7,8 +7,15 @@ resource "aws_instance" "bastion" {
   iam_instance_profile = var.iam_instance_profile
 
   tags = {
+    Name = "bastion",
     role = "bastion"
   }
+}
+
+resource "local_file" "private_key" {
+  sensitive_content  = var.private_key
+  filename = "${path.module}/ec2-private-key.pem"
+  file_permission = "0600"
 }
 
 resource "aws_instance" "master" {
@@ -23,11 +30,11 @@ resource "aws_instance" "master" {
   connection {
     type        = "ssh"
     user        = "ec2-user"
-    private_key = var.private_key
+    private_key = file(local_file.private_key.filename)
     host        = self.private_ip
     bastion_host = aws_instance.bastion.public_ip
     bastion_user = "ec2-user"
-    bastion_private_key = var.private_key
+    bastion_private_key = file(local_file.private_key.filename)
     script_path = "./master.sh"
   }
 
@@ -42,6 +49,11 @@ resource "aws_instance" "master" {
       "sudo sh ./master.sh k8s-master"
     ]
   }
+
+  provisioner "local-exec" {
+    command = "rm -f ${local_file.private_key.filename}"
+  }
+
 
   tags = {
     Name = "k8s-master",
