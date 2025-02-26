@@ -31,10 +31,11 @@ jobs:
       - name: Terraform plan
         run: |
           cd terraform
-          terraform init
+          
+          terraform init --upgrade
           terraform plan -out=tfplan
 
-      - name: Apply Terraform Plan
+      - name: Apply Terraform
         run: terraform apply terraform/tfplan
 
   ansible:
