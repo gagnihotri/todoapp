@@ -27,6 +27,7 @@ module "k8s-cluster" {
   ami                  = var.ami
   key_name             = var.key_name
   iam_instance_profile = module.iam.iam_instance_profile
+  private_key = jsondecode(data.aws_secretsmanager_secret_version.private_key_version.secret_string)["ec2-key"]
 
   subnet = {
     private = module.network.private_subnet_id
