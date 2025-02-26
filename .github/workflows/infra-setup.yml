@@ -5,6 +5,9 @@ on:
     branches:
       - master
 
+permissions:
+  id-token: write  
+
 jobs:
   terraform-plan:
     name: Terraform plan
