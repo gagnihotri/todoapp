@@ -30,11 +30,11 @@ resource "aws_instance" "master" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file("${path.root}/ec2-private-key.pem")
+    private_key = local_sensitive_file.private_key
     host        = self.private_ip
     bastion_host = aws_instance.bastion.public_ip
     bastion_user = "ec2-user"
-    bastion_private_key = file("${path.root}/ec2-private-key.pem")
+    bastion_private_key = local_sensitive_file.private_key
   }
 
   provisioner "remote-exec" {
@@ -43,11 +43,6 @@ resource "aws_instance" "master" {
       "sudo sh ./master.sh k8s-master"
     ]
   }
-
-  provisioner "local-exec" {
-    command = "rm -f ${path.root}/ec2-private-key.pem"
-  }
-
 
   tags = {
     Name = "k8s-master",
