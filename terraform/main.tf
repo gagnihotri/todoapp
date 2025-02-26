@@ -33,6 +33,8 @@ module "k8s-cluster" {
   iam_instance_profile  = module.iam.iam_instance_profile
   private_key           = local.private_key
 
+  depends_on = [data.aws_secretsmanager_secret_version.private_key_version]
+
   subnet = {
     private = module.network.private_subnet_id
     public  = module.network.public_subnet_id
