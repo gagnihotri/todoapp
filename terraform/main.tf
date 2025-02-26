@@ -21,11 +21,10 @@ module "iam" {
 module "k8s-cluster" {
   source               = "./modules/k8s-cluster"
   
-  instance_type_bastion = var.instance_type_bastion
+  worker_instance_count = var.worker_instance_count
   instance_type        = var.instance_type
+  ami                  = var.ami
   key_name             = var.key_name
-  ec2_ami_bastion      = var.ec2_ami_bastion
-  ec2_ami              = var.ec2_ami
   public_subnet_id     = module.network.public_subnet_id
   private_subnet_id    = module.network.private_subnet_id
   bastion_sg_id        = module.security.bastion_sg_id

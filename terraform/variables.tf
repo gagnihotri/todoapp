@@ -1,6 +1,29 @@
-variable "aws_region" {
+variable "region" {
   type        = string
   description = "AWS region where resources will be created"
+}
+
+variable "ami" {
+  type = map(string)
+  default = {
+    master = "ami-0261755bbcb8c4a84"
+    worker = "ami-0261755bbcb8c4a84"
+    bation = "ami-0261755bbcb8c4a84"
+  }
+}
+
+variable "instance_type" {
+  type = map(string)
+  default = {
+    master = "t2.micro"
+    worker = "t2.micro"
+    bation = "t2.micro"
+  }
+}
+
+variable "worker_instance_count" {
+  type    = number
+  default = 1
 }
 
 variable "vpc_cidr_block" {
@@ -23,27 +46,7 @@ variable "availability_zone" {
   description = "AWS Availability Zone"
 }
 
-variable "instance_type_bastion" {
-  description = "EC2 instance type for bation host"
-  type        = string
-}
-
-variable "instance_type" {
-  description = "EC2 instance type for Kubernetes nodes"
-  type        = string
-}
-
 variable "key_name" {
   description = "The name of the SSH key pair to use for EC2 instances"
-  type        = string
-}
-
-variable "ec2_ami_bastion" {
-  description = "Amazon Machine Image (AMI) ID for the  bation EC2 instance"
-  type        = string
-}
-
-variable "ec2_ami" {
-  description = "Amazon Machine Image (AMI) ID for the EC2 instances"
   type        = string
 }

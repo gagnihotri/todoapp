@@ -1,25 +1,19 @@
-variable "instance_type_bastion" {
-  description = "EC2 instance type for bation host"
-  type        = string
+
+variable "ami" {
+  type = map(string)
 }
 
 variable "instance_type" {
-  description = "EC2 instance type for Kubernetes nodes"
-  type        = string
+  type = map(string)
+}
+
+variable "worker_instance_count" {
+  type    = number
+  default = 1
 }
 
 variable "key_name" {
   description = "The name of the SSH key pair to use for EC2 instances"
-  type        = string
-}
-
-variable "ec2_ami_bastion" {
-  description = "Amazon Machine Image (AMI) ID for the  bation EC2 instance"
-  type        = string
-}
-
-variable "ec2_ami" {
-  description = "Amazon Machine Image (AMI) ID for the EC2 instances"
   type        = string
 }
 

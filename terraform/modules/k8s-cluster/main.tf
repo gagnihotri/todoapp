@@ -1,6 +1,6 @@
 resource "aws_instance" "bastion" {
-  ami           = var.ec2_ami_bastion
-  instance_type = var.instance_type_bastion
+  ami           = var.ami["bation"]
+  instance_type = var.instance_type["bation"]
   key_name      = var.key_name
   subnet_id     = var.public_subnet_id
   security_groups = [var.bastion_sg_id]
@@ -11,30 +11,32 @@ resource "aws_instance" "bastion" {
   }
 }
 
-resource "aws_instance" "controller" {
-  ami           = var.ec2_ami
-  instance_type = var.instance_type
+resource "aws_instance" "master" {
+  ami           = var.ami["master"]
+  instance_type = var.instance_type["master"]
   key_name      = var.key_name
   subnet_id     = var.private_subnet_id
   security_groups = [var.sg_id]
   iam_instance_profile = var.iam_instance_profile
 
   tags = {
-    Name = "k8s-controller",
-    k8s-role = "controller"
+    Name = "k8s-master",
+    k8s-role = "master"
   }
 }
 
 resource "aws_instance" "worker" {
-  ami           = var.ec2_ami
-  instance_type = var.instance_type
+  count         = var.worker_instance_count
+
+  ami           = var.ami["worker"]
+  instance_type = var.instance_type["worker"]
   key_name      = var.key_name
   subnet_id     = var.private_subnet_id
   security_groups = [var.sg_id]
   iam_instance_profile = var.iam_instance_profile
 
   tags = {
-    Name = "k8s-worker",
+    Name = "k8s-worker-${count.index}",
     k8s-role = "worker"
   }
 }

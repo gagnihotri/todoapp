@@ -43,7 +43,7 @@ jobs:
   terraform-apply:
     name: terraform apply
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    needs: [terraform-plan]
     steps:
       - name: Terraform setup
         uses: hashicorp/setup-terraform@v3
