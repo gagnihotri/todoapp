@@ -13,7 +13,7 @@ resource "aws_instance" "bastion" {
 }
 
 resource "local_sensitive_file" "private_key" {
-  sensitive_content  = var.private_key
+  content  = var.private_key
   filename = "${path.module}/ec2-private-key.pem"
   file_permission = "0600"
 }
@@ -25,7 +25,7 @@ resource "aws_instance" "master" {
   subnet_id     = var.subnet["private"]
   vpc_security_group_ids  = [var.sg["master"]]
   iam_instance_profile = var.iam_instance_profile
-  depends_on = [ aws_instance.bastion, local_file.private_key ]
+  depends_on = [ aws_instance.bastion, local_sensitive_file.private_key ]
 
   connection {
     type        = "ssh"
@@ -51,7 +51,7 @@ resource "aws_instance" "master" {
   }
 
   provisioner "local-exec" {
-    command = "rm -f ${local_file.private_key.filename}"
+    command = "rm -f ${local_sensitive_file.private_key.filename}"
   }
 
 
