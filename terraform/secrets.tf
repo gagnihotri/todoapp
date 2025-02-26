@@ -8,4 +8,5 @@ data "aws_secretsmanager_secret_version" "private_key_version" {
 
 output "decoded_secret" {
   value = jsondecode(data.aws_secretsmanager_secret_version.private_key_version.secret_string)["ec2-key"]
+  sensitive = true
 }
