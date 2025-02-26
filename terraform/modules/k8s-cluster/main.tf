@@ -18,16 +18,17 @@ resource "aws_instance" "master" {
   subnet_id     = var.subnet["private"]
   vpc_security_group_ids  = [var.sg["master"]]
   iam_instance_profile = var.iam_instance_profile
-  depends_on = [ aws_instance.master ]
+  depends_on = [ aws_instance.bastion ]
 
   connection {
     type        = "ssh"
     user        = "ec2-user"
     private_key = var.private_key
     host        = self.private_ip
-    bastion_host = module.k8s-cluster.bastion_public_ip
+    bastion_host = aws_instance.bastion_public_ip
     bastion_user = "ec2-user"
     bastion_private_key = var.private_key
+    script_path = "./master.sh"
   }
 
   provisioner "file" {
