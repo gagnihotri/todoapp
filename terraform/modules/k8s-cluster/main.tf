@@ -31,11 +31,6 @@ resource "aws_instance" "master" {
     bastion_private_key = file("k8s")
   }
 
-  provisioner "file" {
-    source      = "./master.sh"
-    destination = "/home/ubuntu/master.sh"
-  }
-
   provisioner "remote-exec" {
     inline = [
       "chmod +x ./master.sh",
