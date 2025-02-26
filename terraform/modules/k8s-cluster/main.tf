@@ -18,7 +18,7 @@ resource "aws_instance" "master" {
   subnet_id     = var.subnet["private"]
   vpc_security_group_ids  = [var.sg["master"]]
   iam_instance_profile = var.iam_instance_profile
-  depends_on = aws_instance.master
+  depends_on = [ aws_instance.master ]
 
   connection {
     type        = "ssh"
