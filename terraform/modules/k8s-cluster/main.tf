@@ -12,12 +12,6 @@ resource "aws_instance" "bastion" {
   }
 }
 
-resource "local_sensitive_file" "private_key" {
-  content  = var.private_key
-  filename = "${path.module}/ec2-private-key.pem"
-  file_permission = "0600"
-}
-
 resource "aws_instance" "master" {
   ami           = var.ami["master"]
   instance_type = var.instance_type["master"]
@@ -25,16 +19,16 @@ resource "aws_instance" "master" {
   subnet_id     = var.subnet["private"]
   vpc_security_group_ids  = [var.sg["master"]]
   iam_instance_profile = var.iam_instance_profile
-  depends_on = [ aws_instance.bastion, local_sensitive_file.private_key ]
+  depends_on = [ aws_instance.bastion ]
 
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file(local_sensitive_file.private_key.filename)
+    private_key = file("k8s")
     host        = self.private_ip
     bastion_host = aws_instance.bastion.public_ip
     bastion_user = "ec2-user"
-    bastion_private_key = file(local_sensitive_file.private_key.filename)
+    bastion_private_key = file("k8s")
   }
 
   provisioner "file" {
