@@ -3,7 +3,12 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "public_subnet_cidr" {
+  description = "cidr of the public subnet"
+  type        = string
+}
+
 variable "private_subnet_cidr" {
-  description = "The ID of the private subnet for private resources"
+  description = "cidr of the private subnet "
   type        = string
 }

@@ -8,7 +8,7 @@ variable "ami" {
   default = {
     master = "ami-0261755bbcb8c4a84"
     worker = "ami-0261755bbcb8c4a84"
-    bation = "ami-0261755bbcb8c4a84"
+    bastion = "ami-0261755bbcb8c4a84"
   }
 }
 
@@ -17,7 +17,7 @@ variable "instance_type" {
   default = {
     master = "t2.micro"
     worker = "t2.micro"
-    bation = "t2.micro"
+    bastion = "t2.micro"
   }
 }
 

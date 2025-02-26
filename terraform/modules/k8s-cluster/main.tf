@@ -1,9 +1,9 @@
 resource "aws_instance" "bastion" {
-  ami           = var.ami["bation"]
-  instance_type = var.instance_type["bation"]
+  ami           = var.ami["bastion"]
+  instance_type = var.instance_type["bastion"]
   key_name      = var.key_name
-  subnet_id     = var.public_subnet_id
-  vpc_security_group_ids  = [var.bastion_sg_id]
+  subnet_id     = var.subnet["public"]
+  vpc_security_group_ids  = [var.sg["bastion"]]
   associate_public_ip_address = true
 
   tags = {
@@ -15,9 +15,21 @@ resource "aws_instance" "master" {
   ami           = var.ami["master"]
   instance_type = var.instance_type["master"]
   key_name      = var.key_name
-  subnet_id     = var.private_subnet_id
-  vpc_security_group_ids  = [var.sg_id]
+  subnet_id     = var.subnet["private"]
+  vpc_security_group_ids  = [var.sg["master"]]
   iam_instance_profile = var.iam_instance_profile
+
+  provisioner "file" {
+    source      = "./master.sh"
+    destination = "./master.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x ./master.sh",
+      "sudo sh ./master.sh k8s-master"
+    ]
+  }
 
   tags = {
     Name = "k8s-master",
@@ -31,8 +43,8 @@ resource "aws_instance" "worker" {
   ami           = var.ami["worker"]
   instance_type = var.instance_type["worker"]
   key_name      = var.key_name
-  subnet_id     = var.private_subnet_id
-  vpc_security_group_ids  = [var.sg_id]
+  subnet_id     = var.subnet["private"]
+  vpc_security_group_ids  = [var.sg["worker"]]
   iam_instance_profile = var.iam_instance_profile
 
   tags = {
