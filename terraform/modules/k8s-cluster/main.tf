@@ -43,11 +43,6 @@ resource "aws_instance" "master" {
     ]
   }
 
-  provisioner "local-exec" {
-    command = "rm -f ${local_sensitive_file.private_key.filename}"
-  }
-
-
   tags = {
     Name = "k8s-master",
     k8s-role = "master"
