@@ -1,5 +1,5 @@
 region   = "us-east-1"
-key_name = "javademokey"
+key_name = "test-pem-pair"
 
 ami = {
   master  = "ami-0e1bed4f06a3b463d"
