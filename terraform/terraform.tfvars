@@ -1,15 +1,15 @@
-region                = "us-east-1"
-key_name              = "javademokey"
+region   = "us-east-1"
+key_name = "javademokey"
 
 ami = {
-  master = "ami-0e1bed4f06a3b463d"
-  worker = "ami-053a45fff0a704a47"
+  master  = "ami-0e1bed4f06a3b463d"
+  worker  = "ami-053a45fff0a704a47"
   bastion = "ami-053a45fff0a704a47"
 }
 
 instance_type = {
-  master = "t2.micro"
-  worker = "t2.micro"
+  master  = "t2.micro"
+  worker  = "t2.micro"
   bastion = "t2.micro"
 }
 

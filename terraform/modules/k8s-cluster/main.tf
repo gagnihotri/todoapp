@@ -25,7 +25,7 @@ resource "aws_instance" "master" {
     user        = "ec2-user"
     private_key = var.private_key
     host        = self.private_ip
-    bastion_host = aws_instance.bastion_public_ip
+    bastion_host = aws_instance.bastion.public_ip
     bastion_user = "ec2-user"
     bastion_private_key = var.private_key
     script_path = "./master.sh"

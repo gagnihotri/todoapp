@@ -6,8 +6,8 @@ variable "region" {
 variable "ami" {
   type = map(string)
   default = {
-    master = "ami-0261755bbcb8c4a84"
-    worker = "ami-0261755bbcb8c4a84"
+    master  = "ami-0261755bbcb8c4a84"
+    worker  = "ami-0261755bbcb8c4a84"
     bastion = "ami-0261755bbcb8c4a84"
   }
 }
@@ -15,8 +15,8 @@ variable "ami" {
 variable "instance_type" {
   type = map(string)
   default = {
-    master = "t2.micro"
-    worker = "t2.micro"
+    master  = "t2.micro"
+    worker  = "t2.micro"
     bastion = "t2.micro"
   }
 }
@@ -27,22 +27,22 @@ variable "worker_instance_count" {
 }
 
 variable "vpc_cidr_block" {
-  type    = string
+  type        = string
   description = "CIDR block for the VPC"
 }
 
 variable "public_subnet_cidr" {
-  type    = string
+  type        = string
   description = "CIDR block for the public subnet"
 }
 
 variable "private_subnet_cidr" {
-  type    = string
+  type        = string
   description = "CIDR block for the private subnet"
 }
 
 variable "availability_zone" {
-  type    = string
+  type        = string
   description = "AWS Availability Zone"
 }
 
