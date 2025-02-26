@@ -32,13 +32,13 @@ jobs:
         run: |
           cd terraform
           terraform init
-          terraform plan -out=$(pwd)/tfplan
+          terraform plan -out=tfplan
 
       - name: Save Terraform Plan
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan
-          path: tfplan
+          path: terraform/tfplan
   
   terraform-apply:
     name: terraform apply
@@ -57,7 +57,7 @@ jobs:
           path: .
       
       - name: Apply Terraform Plan
-        run: terraform apply tfplan
+        run: terraform apply terraform/tfplan
 
   ansible:
     name: Deploy build
