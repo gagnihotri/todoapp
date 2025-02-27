@@ -87,10 +87,10 @@ resource "null_resource" "setup-master" {
       host        = aws_instance.master.private_ip
     }
 
-    command = <<-EOT
-      scp -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh
-      cat /tmp/join-command.sh
-    EOT
+    inline = [
+      "scp -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh",
+      "cat /tmp/join-command.sh"
+    ]
   }
 
   depends_on = [ aws_instance.master ]
