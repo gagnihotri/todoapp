@@ -142,11 +142,11 @@ resource "null_resource" "join-workers" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = tls_private_key.node-key_private_pem
-      host        = aws_instance.worker[count.index].private_ip
+      private_key = tls_private_key.node-key.private_key_openssh
+      host        = aws_instance.master.private_ip
       bastion_host = aws_instance.bastion.public_ip
       bastion_user = "ec2-user"
-      bastion_private_key = tls_private_key.node-key_private_pem
+      bastion_private_key = tls_private_key.node-key.private_key_openssh
     }
 
     inline = [
