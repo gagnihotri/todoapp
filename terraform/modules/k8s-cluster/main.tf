@@ -134,3 +134,32 @@ resource "aws_instance" "worker" {
 
   depends_on = [ aws_instance.master ]
 }
+
+resource "null_resource" "join-workers" {
+  count = var.worker_instance_count
+  depends_on = [null_resource.copy-join-command-to-bastion]
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = tls_private_key.node-key_private_pem
+      host        = aws_instance.worker[count.index].private_ip
+      bastion_host = aws_instance.bastion.public_ip
+      bastion_user = "ec2-user"
+      bastion_private_key = tls_private_key.node-key_private_pem
+    }
+
+    inline = [
+      # Copy join command to the worker node
+      "scp -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ec2-user@${aws_instance.bastion.public_ip}:/home/ec2-user/join-command.sh /home/ubuntu/join-command.sh",
+      "chmod +x /home/ubuntu/join-command.sh",
+      
+      # Run the join command to add the worker to the cluster
+      "sudo /home/ubuntu/join-command.sh"
+    ]
+  }
+
+  depends_on = [ aws_instance.worker ]
+}
+
