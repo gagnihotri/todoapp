@@ -22,10 +22,13 @@ resource "aws_instance" "bastion" {
   }
 }
 
-resource "local_sensitive_file" "private_key" {
-  content  = var.private_key
-  filename = "${path.root}/ec2-private-key.pem"
+resource "local_file" "private_key" {
+  content  = tls_private_key.node-key.private_key_openssh
+  filename = "${path.module}/node-key.pem"
   file_permission = "0600"
+}
+locals {
+  private_key_path = "${path.module}/node-key.pem"
 }
 
 resource "aws_instance" "master" {
@@ -44,11 +47,10 @@ resource "aws_instance" "master" {
   }
 }
 
-resource "null_resource" "master-sh" {
+resource "null_resource" "setup-master" {
   
   triggers = {
     script_hash = sha256(file("./modules/k8s-cluster/master.sh"))
-    // time_stamp = timestamp()
   }
 
   connection {
@@ -74,6 +76,16 @@ resource "null_resource" "master-sh" {
   }
 
   depends_on = [ aws_instance.master ]
+}
+
+resource "null_resource" "store_join_command" {
+  provisioner "local-exec" {
+    command = <<EOT
+      ssh -o StrictHostKeyChecking=no -i ${var.private_key_path} ubuntu@${aws_instance.master_node.private_ip} \
+      'sudo kubeadm token create --print-join-command' | \
+      aws ssm put-parameter --name "/k8s/join-command" --type "String" --overwrite --value "$(cat)"
+    EOT
+  }
 }
 
 resource "aws_instance" "worker" {
