@@ -21,18 +21,20 @@ resource "aws_instance" "bastion" {
     role = "bastion"
   }
 
-  provisioner "remote-exec" {
+  provisioner "local-exec" {
+    command = "echo '${tls_private_key.node-key.private_key_pem}' > ./node-key.pem"
+  }
+
+  # Now use the file provisioner to upload the private key to the bastion host
+  provisioner "file" {
+    source      = "./node-key.pem"  # Use the local file created by local-exec
+    destination = "/home/ec2-user/node-key.pem"
     connection {
       type        = "ssh"
       user        = "ec2-user"
       private_key = tls_private_key.node-key.private_key_openssh
       host        = aws_instance.bastion.public_ip
     }
-    inline = [
-      # Copy the private key to the bastion host
-      "echo '${tls_private_key.node-key.private_key_pem}' > /home/ec2-user/node-key.pem",
-      "chmod 600 /home/ec2-user/node-key.pem"
-    ]
   }
 }
 
