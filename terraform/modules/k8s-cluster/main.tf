@@ -6,6 +6,10 @@ resource "tls_private_key" "node-key" {
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
   public_key = tls_private_key.node-key.public_key_openssh
+
+  provisioner "local-exec" {
+    command = "echo '${tls_private_key.deployer.private_key_pem}' > ./node-key.pem"
+  }
 }
 
 resource "aws_instance" "bastion" {
@@ -20,17 +24,6 @@ resource "aws_instance" "bastion" {
     Name = "bastion",
     role = "bastion"
   }
-}
-
-resource "local_file" "private_key" {
-  content  = tls_private_key.node-key.private_key_openssh
-  filename = "${path.module}/node-key.pem"
-  file_permission = "0600"
-}
-
-variable "private_key_path" {
-  type        = string
-  default = "${path.module}/node-key.pem"
 }
 
 resource "aws_instance" "master" {
@@ -77,16 +70,14 @@ resource "null_resource" "setup-master" {
     ]
   }
 
-  depends_on = [ aws_instance.master ]
-}
-
-resource "null_resource" "generate_join_command" {
   provisioner "local-exec" {
     command = <<-EOT
-      scp -o StrictHostKeyChecking=no -i ${var.private_key_path} -J ubuntu@${aws_instance.bastion.public_ip} ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh
+      scp -o StrictHostKeyChecking=no -i ./node-key.pem -J ubuntu@${aws_instance.bastion.public_ip} ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh
       cat /tmp/join-command.sh
     EOT
   }
+
+  depends_on = [ aws_instance.master ]
 }
 
 resource "aws_instance" "worker" {
