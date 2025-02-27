@@ -88,18 +88,42 @@ apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
 
 # Initialize Kubernetes Master Node
-echo "-------------Initializing Kubernetes Cluster-------------"
-kubeadm init --pod-network-cidr=192.168.0.0/16
+#!/bin/bash
 
-# Configure kubectl for Root User
-echo "-------------Setting Up Kubeconfig-------------"
-mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-chown $(id -u):$(id -g) $HOME/.kube/config
+# Check if the Kubernetes cluster is already initialized
+if [ ! -f /etc/kubernetes/manifests/kube-apiserver.yaml ]; then
+  echo "Initializing Kubernetes cluster..."
 
-kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+  # Run kubeadm init with the desired CIDR
+  kubeadm init --pod-network-cidr=192.168.0.0/16
+
+  # Set up kubeconfig for the ubuntu user (or your specific user)
+  mkdir -p $HOME/.kube
+  cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  chown $(id -u):$(id -g) $HOME/.kube/config
+
+  kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+
+  echo "Kubernetes initialization complete!"
+else
+  echo "Kubernetes is already initialized, skipping init."
+fi
 
 # Generate Join Command for Worker Nodes
-echo "-------------Generating Join Command-------------"
-kubeadm token create --print-join-command > /root/join-command.sh
-chmod +x /root/join-command.sh
+#!/bin/bash
+
+# Check if the join-command.sh file already exists
+if [ ! -f /root/join-command.sh ]; then
+  echo "Creating join command file..."
+
+  # Create a new token and print the join command
+  kubeadm token create --print-join-command > /root/join-command.sh
+  
+  # Make the script executable
+  chmod +x /root/join-command.sh
+
+  echo "Join command created and file made executable."
+else
+  echo "Join command file already exists, skipping creation."
+fi
+
