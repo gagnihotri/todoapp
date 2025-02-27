@@ -15,11 +15,6 @@ echo "-------------Installing Required Packages-------------"
 apt-get update -y
 apt-get install -y curl wget gpg apt-transport-https ca-certificates
 
-# Install runc
-wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
-install -m 755 runc.amd64 /usr/local/sbin/runc
-rm -f runc.amd64
-
 # Download and extract containerd
 CONTAINERD_VERSION="1.7.4"
 CONTAINERD_TARBALL="containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz"
@@ -33,15 +28,16 @@ else
 fi
 
 # Install containerd service file
-if [ ! -f "/usr/local/lib/systemd/system/containerd.service" ]; then
-    wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
-    mkdir -p /usr/local/lib/systemd/system
-    mv containerd.service /usr/local/lib/systemd/system/containerd.service
-    systemctl daemon-reload
-    systemctl enable --now containerd
-else
-    echo "Containerd service already installed, skipping..."
-fi
+wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+mkdir -p /usr/local/lib/systemd/system
+mv containerd.service /usr/local/lib/systemd/system/containerd.service
+systemctl daemon-reload
+systemctl enable --now containerd
+
+# Install runc
+wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
+install -m 755 runc.amd64 /usr/local/sbin/runc
+rm -f runc.amd64
 
 echo "-------------Installing CNI Plugins-------------"
 
@@ -69,7 +65,7 @@ if [ ! -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg ]; then
   # Download the key if it doesn't exist
   curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
   # Add the Kubernetes repository to the sources list
-  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
+  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 fi
 
 apt-get update -y
@@ -85,7 +81,7 @@ mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 
-kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
 echo "Kubernetes initialization complete!"
 
