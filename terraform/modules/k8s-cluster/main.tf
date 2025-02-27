@@ -135,7 +135,8 @@ resource "aws_instance" "worker" {
 }
 
 resource "null_resource" "setup-worker" {
-  
+  count = var.worker_instance_count
+
   triggers = {
     script_hash = sha256(file("./modules/k8s-cluster/worker.sh"))
   }
@@ -144,7 +145,7 @@ resource "null_resource" "setup-worker" {
     type        = "ssh"
     user        = "ubuntu"
     private_key = tls_private_key.node-key.private_key_openssh
-    host        = aws_instance.worker.private_ip
+    host        = aws_instance.worker[count.index].private_ip
     bastion_host = aws_instance.bastion.public_ip
     bastion_user = "ec2-user"
     bastion_private_key = tls_private_key.node-key.private_key_openssh
