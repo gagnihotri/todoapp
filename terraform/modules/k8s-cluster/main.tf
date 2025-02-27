@@ -110,6 +110,7 @@ resource "null_resource" "setup-master" {
 
     inline = [
       "scp -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ubuntu@${aws_instance.master.private_ip}:/home/ubuntu/join-command.sh /home/ec2-user/join-command.sh",
+      "chmod +x /home/ec2-user/join-command.sh"
     ]
   }
 
