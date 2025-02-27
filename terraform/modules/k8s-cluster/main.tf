@@ -28,8 +28,9 @@ resource "local_file" "private_key" {
   file_permission = "0600"
 }
 
-locals {
-  private_key_path = "${path.module}/node-key.pem"
+variable "private_key_path" {
+  type        = string
+  default = "${path.module}/node-key.pem"
 }
 
 resource "aws_instance" "master" {
@@ -82,7 +83,7 @@ resource "null_resource" "setup-master" {
 resource "null_resource" "generate_join_command" {
   provisioner "local-exec" {
     command = <<-EOT
-      scp -o StrictHostKeyChecking=no -i ${locals.private_key_path} -J ubuntu@${aws_instance.bastion.public_ip} ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh
+      scp -o StrictHostKeyChecking=no -i ${var.private_key_path} -J ubuntu@${aws_instance.bastion.public_ip} ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh
       cat /tmp/join-command.sh
     EOT
   }
