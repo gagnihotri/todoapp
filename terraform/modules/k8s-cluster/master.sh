@@ -87,9 +87,6 @@ apt-get update -y
 apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
 
-# Initialize Kubernetes Master Node
-#!/bin/bash
-
 # Check if the Kubernetes cluster is already initialized
 if [ ! -f /etc/kubernetes/manifests/kube-apiserver.yaml ]; then
   echo "Initializing Kubernetes cluster..."
@@ -108,9 +105,6 @@ if [ ! -f /etc/kubernetes/manifests/kube-apiserver.yaml ]; then
 else
   echo "Kubernetes is already initialized, skipping init."
 fi
-
-# Generate Join Command for Worker Nodes
-#!/bin/bash
 
 # Check if the join-command.sh file already exists
 if [ ! -f /root/join-command.sh ]; then

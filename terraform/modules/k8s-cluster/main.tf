@@ -6,10 +6,6 @@ resource "tls_private_key" "node-key" {
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
   public_key = tls_private_key.node-key.public_key_openssh
-
-  provisioner "local-exec" {
-    command = "echo '${tls_private_key.node-key.private_key_pem}' > ./node-key.pem"
-  }
 }
 
 resource "aws_instance" "bastion" {
@@ -23,6 +19,14 @@ resource "aws_instance" "bastion" {
   tags = {
     Name = "bastion",
     role = "bastion"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      # Copy the private key to the bastion host
+      "echo '${tls_private_key.node-key.private_key_pem}' > /home/ubuntu/node-key.pem",
+      "chmod 600 /home/ubuntu/node-key.pem" # Secure the private key on the bastion
+    ]
   }
 }
 
