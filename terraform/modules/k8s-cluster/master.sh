@@ -123,4 +123,5 @@ fi
 
 kubeadm version
 kubectl version
+kubelet --version
 

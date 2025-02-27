@@ -89,3 +89,4 @@ apt-mark hold kubelet kubeadm kubectl
 
 kubeadm version
 kubectl version
+kubelet --version
