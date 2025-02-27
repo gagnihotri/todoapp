@@ -137,7 +137,6 @@ resource "aws_instance" "worker" {
 
 resource "null_resource" "join-workers" {
   count = var.worker_instance_count
-  depends_on = [null_resource.copy-join-command-to-bastion]
 
   provisioner "remote-exec" {
     connection {

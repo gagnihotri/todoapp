@@ -107,14 +107,14 @@ else
 fi
 
 # Check if the join-command.sh file already exists
-if [ ! -f /root/join-command.sh ]; then
+if [ ! -f /home/ubuntu/join-command.sh ]; then
   echo "Creating join command file..."
 
   # Create a new token and print the join command
-  kubeadm token create --print-join-command > /root/join-command.sh
+  kubeadm token create --print-join-command > /home/ubuntu/join-command.sh
   
   # Make the script executable
-  chmod +x /root/join-command.sh
+  chmod +x /home/ubuntu/join-command.sh
 
   echo "Join command created and file made executable."
 else
