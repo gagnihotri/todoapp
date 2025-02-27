@@ -15,13 +15,15 @@ echo "-------------Installing Required Packages-------------"
 apt-get update -y
 apt-get install -y curl wget gpg apt-transport-https ca-certificates
 
-echo "-------------Installing Containerd-------------"
+# Install runc
+wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
+install -m 755 runc.amd64 /usr/local/sbin/runc
+rm -f runc.amd64
 
-# Define variables
+# Download and extract containerd
 CONTAINERD_VERSION="1.7.4"
 CONTAINERD_TARBALL="containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz"
 
-# Download and extract containerd
 if [ ! -f "/usr/local/bin/containerd" ]; then
     wget https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/${CONTAINERD_TARBALL}
     tar -C /usr/local -xzf ${CONTAINERD_TARBALL}
@@ -69,11 +71,6 @@ if [ ! -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg ]; then
   # Add the Kubernetes repository to the sources list
   echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
 fi
-
-# Install runc
-wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
-install -m 755 runc.amd64 /usr/local/sbin/runc
-rm -f runc.amd64
 
 apt-get update -y
 apt-get install -y kubelet kubeadm kubectl
