@@ -53,19 +53,12 @@ CNI_VERSION="1.6.2"
 CNI_TARBALL="cni-plugins-linux-amd64-v${CNI_VERSION}.tgz"
 CNI_DIR="/opt/cni/bin"
 
-# Ensure the directory exists
 mkdir -p ${CNI_DIR}
-
-# Check if CNI plugins are already installed
-if [ ! -f "${CNI_DIR}/bridge" ]; then
-    echo "Downloading CNI plugins..."
-    curl -O -L https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/${CNI_TARBALL}
-    tar -C ${CNI_DIR} -xzf ${CNI_TARBALL}
-    rm -f ${CNI_TARBALL}
-    echo "CNI plugins installed successfully!"
-else
-    echo "CNI plugins already installed, skipping..."
-fi
+echo "Downloading CNI plugins..."
+curl -O -L https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/${CNI_TARBALL}
+tar -Cxzf ${CNI_DIR} ${CNI_TARBALL}
+rm -f ${CNI_TARBALL}
+echo "CNI plugins installed successfully!"
 
 # Enable IP forward
 grep -qxF 'net.ipv4.ip_forward = 1' /etc/sysctl.conf || echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
