@@ -56,7 +56,7 @@ CNI_DIR="/opt/cni/bin"
 mkdir -p ${CNI_DIR}
 echo "Downloading CNI plugins..."
 curl -O -L https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/${CNI_TARBALL}
-tar -Cxzf ${CNI_DIR} ${CNI_TARBALL}
+tar Cxzvf ${CNI_DIR} ${CNI_TARBALL}
 rm -f ${CNI_TARBALL}
 echo "CNI plugins installed successfully!"
 
