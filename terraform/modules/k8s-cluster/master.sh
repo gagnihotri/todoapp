@@ -41,11 +41,6 @@ else
     echo "Containerd service already installed, skipping..."
 fi
 
-# Install runc
-wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
-install -m 755 runc.amd64 /usr/local/sbin/runc
-rm -f runc.amd64
-
 echo "-------------Installing CNI Plugins-------------"
 
 # Define variables
@@ -71,10 +66,14 @@ sudo mkdir -p -m 755 /etc/apt/keyrings
 if [ ! -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg ]; then
   # Download the key if it doesn't exist
   curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  # Add the Kubernetes repository to the sources list
+  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
 fi
 
-# Add the Kubernetes repository to the sources list
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
+# Install runc
+wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
+install -m 755 runc.amd64 /usr/local/sbin/runc
+rm -f runc.amd64
 
 apt-get update -y
 apt-get install -y kubelet kubeadm kubectl
