@@ -8,7 +8,7 @@ resource "aws_key_pair" "deployer" {
   public_key = tls_private_key.node-key.public_key_openssh
 
   provisioner "local-exec" {
-    command = "echo '${tls_private_key.deployer.private_key_pem}' > ./node-key.pem"
+    command = "echo '${tls_private_key.node-key.private_key_pem}' > ./node-key.pem"
   }
 }
 
