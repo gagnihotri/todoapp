@@ -121,3 +121,6 @@ else
   echo "Join command file already exists, skipping creation."
 fi
 
+kubeadm version
+kubectl version
+

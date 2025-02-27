@@ -88,3 +88,4 @@ apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
 
 kubeadm version
+kubectl version
