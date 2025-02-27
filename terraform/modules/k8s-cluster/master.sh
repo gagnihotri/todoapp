@@ -15,6 +15,10 @@ echo "-------------Installing Required Packages-------------"
 apt-get update -y
 apt-get install -y curl wget gpg apt-transport-https ca-certificates
 
+# Enable IP forward
+grep -qxF 'net.ipv4.ip_forward = 1' /etc/sysctl.conf || echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
+sysctl -p
+
 # Download and extract containerd
 CONTAINERD_VERSION="1.7.4"
 CONTAINERD_TARBALL="containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz"
@@ -53,10 +57,6 @@ tar Cxzvf ${CNI_DIR} ${CNI_TARBALL}
 rm -f ${CNI_TARBALL}
 echo "CNI plugins installed successfully!"
 
-# Enable IP forward
-grep -qxF 'net.ipv4.ip_forward = 1' /etc/sysctl.conf || echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
-sysctl -p
-
 # Create the directory with proper permissions (if not already exists)
 sudo mkdir -p -m 755 /etc/apt/keyrings
 
@@ -71,7 +71,6 @@ fi
 apt-get update -y
 apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
-
 
 # Run kubeadm init
 kubeadm init --pod-network-cidr=192.168.0.0/16
