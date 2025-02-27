@@ -31,16 +31,18 @@ else
     echo "Containerd already installed, skipping..."
 fi
 
-# Install containerd service file
-wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+# Install containerd service file from the correct version
+wget https://raw.githubusercontent.com/containerd/containerd/v${CONTAINERD_VERSION}/containerd.service
 mkdir -p /usr/local/lib/systemd/system
 mv containerd.service /usr/local/lib/systemd/system/containerd.service
 systemctl daemon-reload
-systemctl enable --now containerd
 
 mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
 sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+
+systemctl enable --now containerd
+systemctl restart containerd
 
 # Install runc
 wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
