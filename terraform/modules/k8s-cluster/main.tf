@@ -170,7 +170,7 @@ resource "null_resource" "join-workers" {
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      user        = "ubuntu"
+      user        = "ec2-user"
       private_key = tls_private_key.node-key.private_key_openssh
       host        = aws_instance.bastion.public_ip
     }
