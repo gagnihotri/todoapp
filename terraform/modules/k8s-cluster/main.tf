@@ -21,6 +21,10 @@ resource "aws_instance" "bastion" {
     role = "bastion"
   }
 
+  depends_on = [tls_private_key.node-key]
+}
+
+resource "null_resource" "copy-pem" {
   provisioner "local-exec" {
     command = "echo '${tls_private_key.node-key.private_key_openssh}' > ./node-key.pem"
   }
@@ -50,8 +54,8 @@ resource "aws_instance" "bastion" {
     ]
   }
 
-  depends_on = [tls_private_key.node-key]
-}
+  depends_on = [aws_instance.bastion]
+} 
 
 resource "aws_instance" "master" {
   ami           = var.ami["master"]
