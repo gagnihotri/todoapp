@@ -48,10 +48,15 @@ resource "aws_instance" "master" {
     bastion_private_key = tls_private_key.node-key.private_key_openssh
   }
 
+  provisioner "file" {
+    source = "./modules/k8s-cluster/master.sh"
+    destination = "/home/ubuntu/master.sh"
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "chmod +x ./master.sh",
-      "sudo sh ./master.sh k8s-master"
+      "chmod +x /home/ubuntu/master.sh",
+      "sudo /home/ubuntu/master.sh k8s-master"
     ]
   }
 
