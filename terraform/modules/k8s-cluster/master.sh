@@ -38,6 +38,9 @@ mv containerd.service /usr/local/lib/systemd/system/containerd.service
 systemctl daemon-reload
 systemctl enable --now containerd
 
+mkdir /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
+
 # Install runc
 wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
 install -m 755 runc.amd64 /usr/local/sbin/runc
