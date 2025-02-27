@@ -1,7 +1,17 @@
+resource "tls_private_key" "node-key" {
+  algorithm   = "RSA"
+  rsa_bits = 4096
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "deployer-key"
+  public_key = tls_private_key.node-key.public_key_pem
+}
+
 resource "aws_instance" "bastion" {
   ami           = var.ami["bastion"]
   instance_type = var.instance_type["bastion"]
-  key_name      = var.key_name
+  key_name      = aws_key_pair.deployer.key_name
   subnet_id     = var.subnet["public"]
   vpc_security_group_ids  = [var.sg["bastion"]]
   iam_instance_profile = var.iam_instance_profile
@@ -21,7 +31,7 @@ resource "local_sensitive_file" "private_key" {
 resource "aws_instance" "master" {
   ami           = var.ami["master"]
   instance_type = var.instance_type["master"]
-  key_name      = var.key_name
+  key_name      = aws_key_pair.deployer.key_name
   subnet_id     = var.subnet["private"]
   vpc_security_group_ids  = [var.sg["master"]]
   iam_instance_profile = var.iam_instance_profile
@@ -31,11 +41,11 @@ resource "aws_instance" "master" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file(local_sensitive_file.private_key.filename)
+    private_key = tls_private_key.node-key.private_key_pem
     host        = self.private_ip
     bastion_host = aws_instance.bastion.public_ip
     bastion_user = "ec2-user"
-    bastion_private_key = file(local_sensitive_file.private_key.filename)
+    bastion_private_key = tls_private_key.node-key.private_key_pem
   }
 
   provisioner "remote-exec" {
@@ -56,7 +66,7 @@ resource "aws_instance" "worker" {
 
   ami           = var.ami["worker"]
   instance_type = var.instance_type["worker"]
-  key_name      = var.key_name
+  key_name      = aws_key_pair.deployer.key_name
   subnet_id     = var.subnet["private"]
   vpc_security_group_ids  = [var.sg["worker"]]
   iam_instance_profile = var.iam_instance_profile
