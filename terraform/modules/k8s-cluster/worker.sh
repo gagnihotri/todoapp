@@ -1,41 +1,85 @@
 #!/bin/bash
 set -e
 
-# Install dependencies
-sudo yum update -y
-sudo yum install -y docker
-sudo systemctl start docker
-sudo systemctl enable docker
+# Set hostname
+echo "-------------Setting Hostname-------------"
+hostnamectl set-hostname "$1"
 
-# Disable SWAP
-sudo swapoff -a
-sudo sed -i '/ swap / s/^/#/' /etc/fstab
+# Disable Swap
+echo "-------------Disabling Swap-------------"
+swapoff -a
+sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
-# Install Kubernetes
-sudo tee /etc/yum.repos.d/kubernetes.repo <<EOF
-[kubernetes]
-name=Kubernetes
-baseurl=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/
-enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/repodata/repomd.xml.key
-exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
-EOF
+# Install Dependencies
+echo "-------------Installing Required Packages-------------"
+apt-get update -y
+apt-get install -y curl wget gpg apt-transport-https ca-certificates
 
-sudo yum install -y kubelet kubeadm kubectl cri-tools kubernetes-cni
-sudo systemctl enable kubelet
-sudo systemctl start kubelet
+echo "-------------Installing Containerd-------------"
 
-CONTROLLER_IP="${controller_private_ip}"
+# Define variables
+CONTAINERD_VERSION="1.7.4"
+CONTAINERD_TARBALL="containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz"
 
-# Wait for SSH to be available
-while ! nc -z $CONTROLLER_IP 22; do   
-  sleep 5
-done
+# Download and extract containerd
+if [ ! -f "/usr/local/bin/containerd" ]; then
+    wget https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/${CONTAINERD_TARBALL}
+    tar -Cxzvf /usr/local -xzf ${CONTAINERD_TARBALL}
+    rm -f ${CONTAINERD_TARBALL}
+else
+    echo "Containerd already installed, skipping..."
+fi
 
+# Install containerd service file
+if [ ! -f "/usr/local/lib/systemd/system/containerd.service" ]; then
+    wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+    mkdir -p /usr/local/lib/systemd/system
+    mv containerd.service /usr/local/lib/systemd/system/containerd.service
+    systemctl daemon-reload
+    systemctl enable --now containerd
+else
+    echo "Containerd service already installed, skipping..."
+fi
 
-# Fetch join command from controller node
-JOIN_COMMAND=$(ssh -o StrictHostKeyChecking=no -i /home/ec2-user/.ssh/id_rsa ec2-user@$CONTROLLER_IP "cat /tmp/k8s_join_command.sh")
+# Install runc
+wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
+install -m 755 runc.amd64 /usr/local/sbin/runc
+rm -f runc.amd64
 
-sudo $JOIN_COMMAND
+echo "-------------Installing CNI Plugins-------------"
+
+# Define variables
+CNI_VERSION="1.6.2"
+CNI_TARBALL="cni-plugins-linux-amd64-v${CNI_VERSION}.tgz"
+CNI_DIR="/opt/cni/bin"
+
+# Ensure the directory exists
+mkdir -p ${CNI_DIR}
+
+# Check if CNI plugins are already installed
+if [ ! -f "${CNI_DIR}/bridge" ]; then
+    echo "Downloading CNI plugins..."
+    curl -O -L https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/${CNI_TARBALL}
+    tar -C ${CNI_DIR} -xzf ${CNI_TARBALL}
+    rm -f ${CNI_TARBALL}
+    echo "CNI plugins installed successfully!"
+else
+    echo "CNI plugins already installed, skipping..."
+fi
+
+# Enable IP forward
+grep -qxF 'net.ipv4.ip_forward = 1' /etc/sysctl.conf || echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
+sysctl -p
+
+# Install Kubernetes Components
+echo "-------------Installing Kubernetes (Kubelet, Kubeadm, Kubectl)-------------"
+mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+apt-get update -y
+apt-get install -y kubelet kubeadm kubectl
+apt-mark hold kubelet kubeadm kubectl
+
+echo "-------------Printing Kubeadm version-------------"
+kubeadm version
