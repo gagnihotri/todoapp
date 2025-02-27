@@ -81,14 +81,12 @@ resource "null_resource" "setup-master" {
 
 resource "null_resource" "generate_join_command" {
   provisioner "local-exec" {
-    inline = [
-      # SSH to the master node via the bastion host and generate the join command
-      "scp -o StrictHostKeyChecking=no -i ${locals.private_key_path} -J ubuntu@${aws_instance.bastion.public_ip} ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh",
-      "cat /tmp/join-command.sh"
-    ]
+    command = <<-EOT
+      scp -o StrictHostKeyChecking=no -i ${locals.private_key_path} -J ubuntu@${aws_instance.bastion.public_ip} ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh
+      cat /tmp/join-command.sh
+    EOT
   }
 }
-
 
 resource "aws_instance" "worker" {
   count         = var.worker_instance_count
