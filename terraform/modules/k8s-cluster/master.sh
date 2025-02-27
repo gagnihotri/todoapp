@@ -80,24 +80,18 @@ apt-get update -y
 apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
 
-# Check if the Kubernetes cluster is already initialized
-if [ ! -f /etc/kubernetes/manifests/kube-apiserver.yaml ]; then
-  echo "Initializing Kubernetes cluster..."
 
-  # Run kubeadm init
-  kubeadm init
+# Run kubeadm init
+kubeadm init --pod-network-cidr=192.168.0.0/16
 
-  # Set up kubeconfig for the ubuntu user (or your specific user)
-  mkdir -p $HOME/.kube
-  cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  chown $(id -u):$(id -g) $HOME/.kube/config
+# Set up kubeconfig for the ubuntu user (or your specific user)
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
 
-  kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
-  echo "Kubernetes initialization complete!"
-else
-  echo "Kubernetes is already initialized, skipping init."
-fi
+echo "Kubernetes initialization complete!"
 
 # Check if the join-command.sh file already exists
 if [ ! -f /home/ubuntu/join-command.sh ]; then
