@@ -24,7 +24,7 @@ CONTAINERD_TARBALL="containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz"
 # Download and extract containerd
 if [ ! -f "/usr/local/bin/containerd" ]; then
     wget https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/${CONTAINERD_TARBALL}
-    tar -Cxzvf /usr/local -xzf ${CONTAINERD_TARBALL}
+    tar -C /usr/local -xzf ${CONTAINERD_TARBALL}
     rm -f ${CONTAINERD_TARBALL}
 else
     echo "Containerd already installed, skipping..."
