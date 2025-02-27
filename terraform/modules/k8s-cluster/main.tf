@@ -36,6 +36,21 @@ resource "aws_instance" "bastion" {
       host        = aws_instance.bastion.public_ip
     }
   }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = tls_private_key.node-key.private_key_openssh
+      host        = aws_instance.bastion.public_ip
+    }
+
+    inline = [
+      "chmod 600 /home/ec2-user/node-key.pem"  # Secure the private key on the bastion
+    ]
+  }
+
+  depends_on = [tls_private_key.node-key]
 }
 
 resource "aws_instance" "master" {
