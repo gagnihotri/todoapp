@@ -71,11 +71,17 @@ fi
 grep -qxF 'net.ipv4.ip_forward = 1' /etc/sysctl.conf || echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
 sysctl -p
 
-# Install Kubernetes Components
-echo "-------------Installing Kubernetes (Kubelet, Kubeadm, Kubectl)-------------"
-mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+# Create the directory with proper permissions (if not already exists)
+sudo mkdir -p -m 755 /etc/apt/keyrings
+
+# Check if the key file already exists
+if [ ! -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg ]; then
+  # Download the key if it doesn't exist
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+fi
+
+# Add the Kubernetes repository to the sources list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
 
 apt-get update -y
 apt-get install -y kubelet kubeadm kubectl

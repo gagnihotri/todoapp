@@ -35,7 +35,6 @@ resource "aws_instance" "master" {
   iam_instance_profile = var.iam_instance_profile
   depends_on = [ aws_instance.bastion ]
 
-
   tags = {
     Name = "k8s-master",
     k8s-role = "master"
