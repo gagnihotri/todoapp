@@ -37,11 +37,25 @@ resource "aws_instance" "master" {
   iam_instance_profile = var.iam_instance_profile
   depends_on = [ aws_instance.bastion ]
 
+
+  tags = {
+    Name = "k8s-master",
+    k8s-role = "master"
+  }
+}
+
+resource "null_resource" "master-sh" {
+  
+  triggers = {
+    script_hash = sha256(file("./modules/k8s-cluster/master.sh"))
+    // time_stamp = timestamp()
+  }
+
   connection {
     type        = "ssh"
     user        = "ubuntu"
     private_key = tls_private_key.node-key.private_key_openssh
-    host        = self.private_ip
+    host        = aws_instance.master.private_ip
     bastion_host = aws_instance.bastion.public_ip
     bastion_user = "ec2-user"
     bastion_private_key = tls_private_key.node-key.private_key_openssh
@@ -59,10 +73,7 @@ resource "aws_instance" "master" {
     ]
   }
 
-  tags = {
-    Name = "k8s-master",
-    k8s-role = "master"
-  }
+  depends_on = [ aws_instance.master ]
 }
 
 resource "aws_instance" "worker" {
