@@ -26,7 +26,7 @@ systemctl daemon-reload
 systemctl enable --now containerd
 
 mkdir -p /opt/cni/bin
-curl -O -L https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-$ARCH-v1.6.2.tgz
+curl -O -L https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-amd64-v1.6.2.tgz
 tar -C /opt/cni/bin -xzf cni-plugins-linux-amd64-v1.6.2.tgz
 
 # Install Kubernetes Components
