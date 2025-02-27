@@ -109,7 +109,7 @@ resource "null_resource" "setup-master" {
     }
 
     inline = [
-      "scp -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh",
+      "scp -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ubuntu@${aws_instance.master.private_ip}:/home/ubuntu/join-command.sh /tmp/join-command.sh",
       "cat /tmp/join-command.sh"
     ]
   }
@@ -131,4 +131,6 @@ resource "aws_instance" "worker" {
     Name = "k8s-worker-${count.index}",
     k8s-role = "worker"
   }
+
+  depends_on = [ aws_instance.master ]
 }
