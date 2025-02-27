@@ -109,8 +109,7 @@ resource "null_resource" "setup-master" {
     }
 
     inline = [
-      "scp -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ubuntu@${aws_instance.master.private_ip}:/home/ubuntu/join-command.sh /tmp/join-command.sh",
-      "cat /tmp/join-command.sh"
+      "scp -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ubuntu@${aws_instance.master.private_ip}:/home/ubuntu/join-command.sh /home/ec2-user/join-command.sh",
     ]
   }
 
@@ -135,6 +134,37 @@ resource "aws_instance" "worker" {
   depends_on = [ aws_instance.master ]
 }
 
+resource "null_resource" "setup-worker" {
+  
+  triggers = {
+    script_hash = sha256(file("./modules/k8s-cluster/worker.sh"))
+  }
+
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = tls_private_key.node-key.private_key_openssh
+    host        = aws_instance.worker.private_ip
+    bastion_host = aws_instance.bastion.public_ip
+    bastion_user = "ec2-user"
+    bastion_private_key = tls_private_key.node-key.private_key_openssh
+  }
+
+  provisioner "file" {
+    source = "./modules/k8s-cluster/worker.sh"
+    destination = "/home/ubuntu/worker.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /home/ubuntu/worker.sh",
+      "sudo /home/ubuntu/worker.sh k8s-worker"
+    ]
+  }
+
+  depends_on = [ aws_instance.master ]
+}
+
 resource "null_resource" "join-workers" {
   count = var.worker_instance_count
 
@@ -143,19 +173,14 @@ resource "null_resource" "join-workers" {
       type        = "ssh"
       user        = "ubuntu"
       private_key = tls_private_key.node-key.private_key_openssh
-      host        = aws_instance.master.private_ip
-      bastion_host = aws_instance.bastion.public_ip
-      bastion_user = "ec2-user"
-      bastion_private_key = tls_private_key.node-key.private_key_openssh
+      host        = aws_instance.bastion.public_ip
     }
 
     inline = [
-      # Copy join command to the worker node
-      "scp -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ec2-user@${aws_instance.bastion.public_ip}:/home/ec2-user/join-command.sh /home/ubuntu/join-command.sh",
-      "chmod +x /home/ubuntu/join-command.sh",
-      
-      # Run the join command to add the worker to the cluster
-      "sudo /home/ubuntu/join-command.sh"
+      # Copy the join command from the bastion to the worker node
+      "scp -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem /home/ec2-user/join-command.sh ubuntu@${aws_instance.worker[count.index].private_ip}:/home/ubuntu/join-command.sh",
+      "ssh -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ubuntu@${aws_instance.worker[count.index].private_ip} 'chmod +x /home/ubuntu/join-command.sh'",
+      "ssh -o StrictHostKeyChecking=no -i /home/ec2-user/node-key.pem ubuntu@${aws_instance.worker[count.index].private_ip} 'sudo /home/ubuntu/join-command.sh'"
     ]
   }
 

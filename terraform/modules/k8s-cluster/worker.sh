@@ -24,7 +24,7 @@ CONTAINERD_TARBALL="containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz"
 # Download and extract containerd
 if [ ! -f "/usr/local/bin/containerd" ]; then
     wget https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/${CONTAINERD_TARBALL}
-    tar -Cxzvf /usr/local -xzf ${CONTAINERD_TARBALL}
+    tar -C /usr/local -xzf ${CONTAINERD_TARBALL}
     rm -f ${CONTAINERD_TARBALL}
 else
     echo "Containerd already installed, skipping..."
@@ -71,15 +71,18 @@ fi
 grep -qxF 'net.ipv4.ip_forward = 1' /etc/sysctl.conf || echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
 sysctl -p
 
-# Install Kubernetes Components
-echo "-------------Installing Kubernetes (Kubelet, Kubeadm, Kubectl)-------------"
-mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+# Create the directory with proper permissions (if not already exists)
+sudo mkdir -p -m 755 /etc/apt/keyrings
+
+# Check if the key file already exists
+if [ ! -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg ]; then
+  # Download the key if it doesn't exist
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+fi
+
+# Add the Kubernetes repository to the sources list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
 
 apt-get update -y
 apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
-
-echo "-------------Printing Kubeadm version-------------"
-kubeadm version
