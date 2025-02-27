@@ -22,7 +22,7 @@ resource "aws_instance" "bastion" {
   }
 
   provisioner "local-exec" {
-    command = "echo '${tls_private_key.node-key.private_key_pem}' > ./node-key.pem"
+    command = "echo '${tls_private_key.node-key.private_key_openssh}' > ./node-key.pem"
   }
 
   # Now use the file provisioner to upload the private key to the bastion host
