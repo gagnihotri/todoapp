@@ -32,7 +32,7 @@ tar -C /opt/cni/bin -xzf cni-plugins-linux-amd64-v1.6.2.tgz
 # Install Kubernetes Components
 echo "-------------Installing Kubernetes (Kubelet, Kubeadm, Kubectl)-------------"
 mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/kubernetes-archive-keyring.gpg
+curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list
 
 apt-get update -y
