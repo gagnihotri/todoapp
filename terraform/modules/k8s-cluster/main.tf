@@ -27,6 +27,7 @@ resource "local_file" "private_key" {
   filename = "${path.module}/node-key.pem"
   file_permission = "0600"
 }
+
 locals {
   private_key_path = "${path.module}/node-key.pem"
 }
@@ -78,15 +79,16 @@ resource "null_resource" "setup-master" {
   depends_on = [ aws_instance.master ]
 }
 
-resource "null_resource" "store_join_command" {
+resource "null_resource" "generate_join_command" {
   provisioner "local-exec" {
-    command = <<EOT
-      ssh -o StrictHostKeyChecking=no -i ${var.private_key_path} ubuntu@${aws_instance.master_node.private_ip} \
-      'sudo kubeadm token create --print-join-command' | \
-      aws ssm put-parameter --name "/k8s/join-command" --type "String" --overwrite --value "$(cat)"
-    EOT
+    inline = [
+      # SSH to the master node via the bastion host and generate the join command
+      "scp -o StrictHostKeyChecking=no -i ${locals.private_key_path} -J ubuntu@${aws_instance.bastion.public_ip} ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh"
+      "cat /tmp/join-command.sh"
+    ]
   }
 }
+
 
 resource "aws_instance" "worker" {
   count         = var.worker_instance_count
