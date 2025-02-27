@@ -8,7 +8,7 @@ ami = {
 }
 
 instance_type = {
-  master  = "t2.micro"
+  master  = "t2.medium"
   worker  = "t2.micro"
   bastion = "t2.micro"
 }
