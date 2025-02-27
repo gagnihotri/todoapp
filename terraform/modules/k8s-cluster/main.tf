@@ -71,6 +71,7 @@ resource "null_resource" "setup-master" {
 
   provisioner "local-exec" {
     command = <<-EOT
+      ls
       scp -o StrictHostKeyChecking=no -i ./node-key.pem -J ubuntu@${aws_instance.bastion.public_ip} ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh
       cat /tmp/join-command.sh
     EOT
