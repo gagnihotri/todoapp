@@ -22,6 +22,12 @@ resource "aws_instance" "bastion" {
   }
 
   provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = tls_private_key.node-key.private_key_openssh
+      host        = aws_instance.master.private_ip
+    }
     inline = [
       # Copy the private key to the bastion host
       "echo '${tls_private_key.node-key.private_key_pem}' > /home/ubuntu/node-key.pem",
@@ -73,10 +79,16 @@ resource "null_resource" "setup-master" {
     ]
   }
 
-  provisioner "local-exec" {
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = tls_private_key.node-key.private_key_openssh
+      host        = aws_instance.master.private_ip
+    }
+
     command = <<-EOT
-      ls
-      scp -o StrictHostKeyChecking=no -i ./node-key.pem -J ubuntu@${aws_instance.bastion.public_ip} ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh
+      scp -o StrictHostKeyChecking=no -i ./node-key.pem ubuntu@${aws_instance.master.private_ip}:/root/join-command.sh /tmp/join-command.sh
       cat /tmp/join-command.sh
     EOT
   }
