@@ -103,9 +103,9 @@ resource "null_resource" "setup-master" {
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      user        = "ubuntu"
+      user        = "ec2-user"
       private_key = tls_private_key.node-key.private_key_openssh
-      host        = aws_instance.master.private_ip
+      host        = aws_instance.bastion.public_ip
     }
 
     inline = [
