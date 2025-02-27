@@ -19,6 +19,7 @@ apt-get install -y curl wget gpg apt-transport-https ca-certificates
 echo "-------------Installing Containerd-------------"
 wget https://github.com/containerd/containerd/releases/download/v1.7.4/containerd-1.7.4-linux-amd64.tar.gz
 tar Cxzvf /usr/local containerd-1.7.4-linux-amd64.tar.gz
+
 wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
 mkdir -p /usr/local/lib/systemd/system
 mv containerd.service /usr/local/lib/systemd/system/containerd.service
@@ -36,6 +37,7 @@ curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearm
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 grep -qxF 'net.ipv4.ip_forward = 1' /etc/sysctl.conf || echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
+sysctl -p
 
 apt-get update -y
 apt-get install -y kubelet kubeadm kubectl
