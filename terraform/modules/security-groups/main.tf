@@ -49,6 +49,22 @@ resource "aws_security_group" "master_sg" {
   }
 
   ingress {
+    description      = "Weavenet TCP"
+    from_port        = 6783
+    to_port          = 6783
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description      = "Weavenet TCP"
+    from_port        = 6784
+    to_port          = 6784
+    protocol         = "udp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  ingress {
     description      = "Kubelet API"
     from_port        = 10248
     to_port          = 10260
