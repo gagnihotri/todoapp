@@ -5,7 +5,7 @@ resource "tls_private_key" "node-key" {
 
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
-  public_key = tls_private_key.node-key.public_key_pem
+  public_key = tls_private_key.node-key.public_key_openssh
 }
 
 resource "aws_instance" "bastion" {
@@ -41,11 +41,11 @@ resource "aws_instance" "master" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = tls_private_key.node-key.private_key_pem
+    private_key = tls_private_key.node-key.private_key_openssh
     host        = self.private_ip
     bastion_host = aws_instance.bastion.public_ip
     bastion_user = "ec2-user"
-    bastion_private_key = tls_private_key.node-key.private_key_pem
+    bastion_private_key = tls_private_key.node-key.private_key_openssh
   }
 
   provisioner "remote-exec" {
