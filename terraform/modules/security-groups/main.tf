@@ -56,23 +56,6 @@ resource "aws_security_group" "master_sg" {
     cidr_blocks      = [var.private_subnet_cidr]
   }
 
-  ingress {
-    from_port   = 8472
-    to_port     = 8472
-    protocol    = "udp"
-    cidr_blocks = [var.private_subnet_cidr] # Allow traffic from within the VPC
-    description = "Flannel VXLAN overlay network"
-  }
-
-  # Allow Flannel UDP Backend (Only if using UDP mode)
-  ingress {
-    from_port   = 8285
-    to_port     = 8285
-    protocol    = "udp"
-    cidr_blocks = [var.private_subnet_cidr]
-    description = "Flannel UDP backend"
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
