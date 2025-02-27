@@ -91,8 +91,8 @@ apt-mark hold kubelet kubeadm kubectl
 if [ ! -f /etc/kubernetes/manifests/kube-apiserver.yaml ]; then
   echo "Initializing Kubernetes cluster..."
 
-  # Run kubeadm init with the desired CIDR
-  kubeadm init --pod-network-cidr=192.168.0.0/16
+  # Run kubeadm init
+  kubeadm init
 
   # Set up kubeconfig for the ubuntu user (or your specific user)
   mkdir -p $HOME/.kube
