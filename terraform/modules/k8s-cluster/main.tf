@@ -130,8 +130,6 @@ resource "aws_instance" "worker" {
     Name = "k8s-worker-${count.index}",
     k8s-role = "worker"
   }
-
-  depends_on = [ aws_instance.master ]
 }
 
 resource "null_resource" "setup-worker" {
@@ -163,7 +161,7 @@ resource "null_resource" "setup-worker" {
     ]
   }
 
-  depends_on = [ aws_instance.master ]
+  depends_on = [ aws_instance.worker ]
 }
 
 resource "null_resource" "join-workers" {
@@ -185,6 +183,5 @@ resource "null_resource" "join-workers" {
     ]
   }
 
-  depends_on = [ aws_instance.worker ]
+  depends_on = [ null_resource.setup-worker ]
 }
-
