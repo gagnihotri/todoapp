@@ -3,7 +3,7 @@ key_name = "test-pem-pair"
 
 ami = {
   master  = "ami-0e1bed4f06a3b463d"
-  worker  = "ami-053a45fff0a704a47"
+  worker  = "ami-0e1bed4f06a3b463d"
   bastion = "ami-053a45fff0a704a47"
 }
 
