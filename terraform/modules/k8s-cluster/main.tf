@@ -99,7 +99,7 @@ resource "null_resource" "setup-master" {
   }
 
   provisioner "file" {
-    source = "./modules/k8s-cluster/"
+    source = "./modules/k8s-cluster/setup/"
     destination = "/home/ubuntu/setup/"
   }
 
