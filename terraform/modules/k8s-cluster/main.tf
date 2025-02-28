@@ -106,8 +106,8 @@ resource "null_resource" "setup-master" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /home/ubuntu/setup/",
-      "sudo /home/ubuntu/setup/common.sh k8s-master"
-      "sudo /home/ubuntu/setup/master.sh k8s-master"
+      "sudo /home/ubuntu/setup/common.sh k8s-master",
+      "sudo /home/ubuntu/setup/master.sh"
     ]
   }
 
