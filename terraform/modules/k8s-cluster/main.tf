@@ -58,7 +58,7 @@ resource "null_resource" "copy-pem" {
     ]
   }
 
-  depends_on = [aws_instance.bation, null_resource.create-pem]
+  depends_on = [aws_instance.bastion, null_resource.create-pem]
 } 
 
 resource "aws_instance" "master" {
