@@ -2,11 +2,11 @@
 set -e
 
 # Set hostname
-echo "-------------Setting hostname-------------"
-hostnamectl set-hostname $1
+echo "-------------Setting Hostname-------------"
+hostnamectl set-hostname "$1"
 
-# Disable swap
-echo "-------------Disabling swap-------------"
+# Disable Swap
+echo "-------------Disabling Swap-------------"
 swapoff -a
 sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
@@ -15,11 +15,24 @@ echo "-------------Installing Required Packages-------------"
 apt-get update -y
 apt-get install -y curl wget gpg apt-transport-https ca-certificates
 
-# Install Containerd
-echo "-------------Installing Containerd-------------"
-wget https://github.com/containerd/containerd/releases/download/v1.7.4/containerd-1.7.4-linux-amd64.tar.gz
-tar Cxzvf /usr/local containerd-1.7.4-linux-amd64.tar.gz
-wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+# Enable IP forward
+grep -qxF 'net.ipv4.ip_forward = 1' /etc/sysctl.conf || echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
+sysctl -p
+
+# Download and extract containerd
+CONTAINERD_VERSION="1.7.4"
+CONTAINERD_TARBALL="containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz"
+
+if [ ! -f "/usr/local/bin/containerd" ]; then
+    wget https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/${CONTAINERD_TARBALL}
+    tar -C /usr/local -xzf ${CONTAINERD_TARBALL}
+    rm -f ${CONTAINERD_TARBALL}
+else
+    echo "Containerd already installed, skipping..."
+fi
+
+# Install containerd service file from the correct version
+wget https://raw.githubusercontent.com/containerd/containerd/v${CONTAINERD_VERSION}/containerd.service
 mkdir -p /usr/local/lib/systemd/system
 mv containerd.service /usr/local/lib/systemd/system/containerd.service
 systemctl daemon-reload
@@ -31,81 +44,66 @@ sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.to
 systemctl enable --now containerd
 systemctl restart containerd
 
-# Install Runc
-echo "-------------Installing Runc-------------"
-wget https://github.com/opencontainers/runc/releases/download/v1.1.9/runc.amd64
+# Install runc
+wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
 install -m 755 runc.amd64 /usr/local/sbin/runc
+rm -f runc.amd64
 
-# Install CNI
-echo "-------------Installing CNI-------------"
-wget https://github.com/containernetworking/plugins/releases/download/v1.2.0/cni-plugins-linux-amd64-v1.2.0.tgz
-mkdir -p /opt/cni/bin
-tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.2.0.tgz
+echo "-------------Installing CNI Plugins-------------"
 
-# Install CRICTL
-echo "-------------Installing CRICTL-------------"
-VERSION="v1.28.0" # check latest version in /releases page
-wget https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-$VERSION-linux-amd64.tar.gz
-tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
-rm -f crictl-$VERSION-linux-amd64.tar.gz
+# Define variables
+CNI_VERSION="1.6.2"
+CNI_TARBALL="cni-plugins-linux-amd64-v${CNI_VERSION}.tgz"
+CNI_DIR="/opt/cni/bin"
 
-cat <<EOF | sudo tee /etc/crictl.yaml
-runtime-endpoint: unix:///run/containerd/containerd.sock
-image-endpoint: unix:///run/containerd/containerd.sock
-timeout: 2
-debug: false
-pull-image-on-create: false
-EOF
+mkdir -p ${CNI_DIR}
+echo "Downloading CNI plugins..."
+curl -O -L https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/${CNI_TARBALL}
+tar Cxzvf ${CNI_DIR} ${CNI_TARBALL}
+rm -f ${CNI_TARBALL}
+echo "CNI plugins installed successfully!"
 
-# Forwarding IPv4 and letting iptables see bridged traffic
-echo "-------------Setting IPTables-------------"
-cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
-overlay
-br_netfilter
-
-EOF
-modprobe overlay
-modprobe br_netfilter
-cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-iptables = 1
-net.bridge.bridge-nf-call-ip6tables = 1
-net.ipv4.ip_forward = 1
-EOF
-
-sysctl --system
-sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward
-modprobe br_netfilter
-sysctl -p /etc/sysctl.conf
-
+# Create the directory with proper permissions (if not already exists)
 sudo mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-# Add the Kubernetes repository to the sources list
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-apt update -y
-apt install -y kubelet kubeadm kubectl
+# Check if the key file already exists
+if [ ! -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg ]; then
+  # Download the key if it doesn't exist
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  # Add the Kubernetes repository to the sources list
+  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+fi
+
+apt-get update -y
+apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
 
-echo "-------------Printing Kubeadm version-------------"
+# Run kubeadm init
+kubeadm init --pod-network-cidr=192.168.0.0/16
+
+# Set up kubeconfig for the ubuntu user (or your specific user)
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+
+echo "Kubernetes initialization complete!"
+
+# Check if the join-command.sh file already exists
+if [ ! -f /home/ubuntu/join-command.sh ]; then
+  echo "Creating join command file..."
+
+  # Create a new token and print the join command
+  kubeadm token create --print-join-command > /home/ubuntu/join-command.sh
+  
+  # Make the script executable
+  chmod +x /home/ubuntu/join-command.sh
+
+  echo "Join command created and file made executable."
+else
+  echo "Join command file already exists, skipping creation."
+fi
+
 kubeadm version
-
-echo "-------------Pulling Kueadm Images -------------"
-kubeadm config images pull
-
-echo "-------------Running kubeadm init-------------"
-kubeadm init
-
-echo "-------------Copying Kubeconfig-------------"
-mkdir -p /root/.kube
-cp -iv /etc/kubernetes/admin.conf /root/.kube/config
-sudo chown $(id -u):$(id -g) /root/.kube/config
-
-echo "-------------Exporting Kubeconfig-------------"
-export KUBECONFIG=/etc/kubernetes/admin.conf
-
-echo "-------------Deploying Weavenet Pod Networking-------------"
-kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
-
-echo "-------------Creating file with join command-------------"
-kubeadm token create --print-join-command > /home/ubuntu/join-command.sh
-chmod +x /home/ubuntu/join-command.sh
+kubectl version

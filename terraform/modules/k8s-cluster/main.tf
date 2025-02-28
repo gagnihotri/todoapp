@@ -34,9 +34,8 @@ resource "null_resource" "create-pem" {
 }
 
 resource "null_resource" "copy-pem" {
-  # Now use the file provisioner to upload the private key to the bastion host
   provisioner "file" {
-    source      = "./node-key.pem"  # Use the local file created by local-exec
+    source      = "./node-key.pem"
     destination = "/home/ec2-user/node-key.pem"
     connection {
       type        = "ssh"
@@ -59,7 +58,7 @@ resource "null_resource" "copy-pem" {
     ]
   }
 
-  depends_on = [null_resource.create-pem]
+  depends_on = [aws_instance.bation, null_resource.create-pem]
 } 
 
 resource "aws_instance" "master" {
