@@ -8,6 +8,17 @@ resource "aws_key_pair" "deployer" {
   public_key = tls_private_key.node-key.public_key_openssh
 }
 
+resource "null_resource" "create-pem" {
+  provisioner "local-exec" {
+    command = <<EOT
+      echo '${tls_private_key.node-key.private_key_openssh}' > ./node-key.pem
+      chmod 600 ./node-key.pem
+    EOT
+  }
+
+  depends_on = [tls_private_key.node-key]
+}
+
 resource "aws_instance" "bastion" {
   ami           = var.ami["bastion"]
   instance_type = var.instance_type["bastion"]
@@ -22,15 +33,6 @@ resource "aws_instance" "bastion" {
   }
 
   depends_on = [tls_private_key.node-key]
-}
-
-resource "null_resource" "create-pem" {
-  provisioner "local-exec" {
-    command = <<EOT
-      echo '${tls_private_key.node-key.private_key_openssh}' > ./node-key.pem
-      chmod 600 ./node-key.pem
-    EOT
-  }
 }
 
 resource "null_resource" "copy-pem" {
