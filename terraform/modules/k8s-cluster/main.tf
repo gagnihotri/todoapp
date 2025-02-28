@@ -82,7 +82,10 @@ resource "aws_instance" "master" {
 resource "null_resource" "setup-master" {
   
   triggers = {
-    script_hash = sha256(file("./modules/k8s-cluster/master.sh"))
+    script_hash = sha256(join("", [
+      file("./modules/k8s-cluster/setup/common.sh"),
+      file("./modules/k8s-cluster/setup/master.sh")
+    ]))
   }
 
   connection {
@@ -96,14 +99,15 @@ resource "null_resource" "setup-master" {
   }
 
   provisioner "file" {
-    source = "./modules/k8s-cluster/master.sh"
-    destination = "/home/ubuntu/master.sh"
+    source = "./modules/k8s-cluster/"
+    destination = "/home/ubuntu/setup/"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /home/ubuntu/master.sh",
-      "sudo /home/ubuntu/master.sh k8s-master"
+      "chmod +x /home/ubuntu/setup/",
+      "sudo /home/ubuntu/setup/common.sh k8s-master"
+      "sudo /home/ubuntu/setup/master.sh k8s-master"
     ]
   }
 
@@ -146,7 +150,7 @@ resource "null_resource" "setup-worker" {
   count = var.worker_instance_count
 
   triggers = {
-    script_hash = sha256(file("./modules/k8s-cluster/worker.sh"))
+    script_hash = sha256(file("./modules/k8s-cluster/setup/common.sh"))
   }
 
   connection {
@@ -160,14 +164,14 @@ resource "null_resource" "setup-worker" {
   }
 
   provisioner "file" {
-    source = "./modules/k8s-cluster/worker.sh"
-    destination = "/home/ubuntu/worker.sh"
+    source = "./modules/k8s-cluster/setup/common.sh"
+    destination = "/home/ubuntu/setup/common.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /home/ubuntu/worker.sh",
-      "sudo /home/ubuntu/worker.sh k8s-worker"
+      "chmod +x /home/ubuntu/setup/common.sh",
+      "sudo /home/ubuntu/setup/common.sh k8s-worker"
     ]
   }
 
