@@ -9,6 +9,10 @@ resource "aws_key_pair" "deployer" {
 }
 
 resource "null_resource" "create-pem" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
   provisioner "local-exec" {
     command = <<EOT
       echo '${tls_private_key.node-key.private_key_openssh}' > ./node-key.pem
@@ -36,6 +40,10 @@ resource "aws_instance" "bastion" {
 }
 
 resource "null_resource" "copy-pem" {
+  triggers = {
+    always_run = "${timestamp()}"  # Generates a new timestamp every apply
+  }
+
   provisioner "file" {
     source      = "./node-key.pem"
     destination = "/home/ec2-user/node-key.pem"
@@ -105,8 +113,8 @@ resource "null_resource" "setup-master" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo chmod +x /home/ubuntu/common.sh k8s-master",
-      "sudo chomd +x /home/ubuntu/master.sh"
+      "sudo chmod +x /home/ubuntu/common.sh && sudo /home/ubuntu/common.sh k8s-master",
+      "sudo chmod +x /home/ubuntu/master.sh && sudo /home/ubuntu/master.sh"
     ]
   }
 
