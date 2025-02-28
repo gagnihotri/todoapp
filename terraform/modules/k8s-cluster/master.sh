@@ -23,7 +23,13 @@ wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.ser
 mkdir -p /usr/local/lib/systemd/system
 mv containerd.service /usr/local/lib/systemd/system/containerd.service
 systemctl daemon-reload
+
+mkdir -p /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
+sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+
 systemctl enable --now containerd
+systemctl restart containerd
 
 # Install Runc
 echo "-------------Installing Runc-------------"
