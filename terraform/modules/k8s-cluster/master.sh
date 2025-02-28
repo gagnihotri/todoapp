@@ -10,6 +10,11 @@ echo "-------------Disabling swap-------------"
 swapoff -a
 sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
+# Install Dependencies
+echo "-------------Installing Required Packages-------------"
+apt-get update -y
+apt-get install -y curl wget gpg apt-transport-https ca-certificates
+
 # Install Containerd
 echo "-------------Installing Containerd-------------"
 wget https://github.com/containerd/containerd/releases/download/v1.7.4/containerd-1.7.4-linux-amd64.tar.gz
@@ -66,14 +71,13 @@ sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables ne
 modprobe br_netfilter
 sysctl -p /etc/sysctl.conf
 
-# Install kubectl, kubelet and kubeadm
-echo "-------------Installing Kubectl, Kubelet and Kubeadm-------------"
-apt-get update && sudo apt-get install -y apt-transport-https curl
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-
-cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
+# Check if the key file already exists
+if [ ! -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg ]; then
+  # Download the key if it doesn't exist
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  # Add the Kubernetes repository to the sources list
+  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+fi
 
 apt update -y
 apt install -y kubelet kubeadm kubectl
