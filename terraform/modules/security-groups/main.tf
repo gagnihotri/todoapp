@@ -37,7 +37,7 @@ resource "aws_security_group" "master_sg" {
     from_port        = 6443
     to_port          = 6443
     protocol         = "tcp"
-    cidr_blocks      = [var.private_subnet_cidr]
+    cidr_blocks      = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -45,7 +45,7 @@ resource "aws_security_group" "master_sg" {
     from_port        = 2379
     to_port          = 2380
     protocol         = "tcp"
-    cidr_blocks      = [var.private_subnet_cidr]
+    cidr_blocks      = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -53,7 +53,7 @@ resource "aws_security_group" "master_sg" {
     from_port        = 6783
     to_port          = 6783
     protocol         = "tcp"
-    cidr_blocks      = [var.private_subnet_cidr]
+    cidr_blocks      = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -61,7 +61,7 @@ resource "aws_security_group" "master_sg" {
     from_port        = 6784
     to_port          = 6784
     protocol         = "udp"
-    cidr_blocks      = [var.private_subnet_cidr]
+    cidr_blocks      = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -69,7 +69,7 @@ resource "aws_security_group" "master_sg" {
     from_port        = 10248
     to_port          = 10260
     protocol         = "tcp"
-    cidr_blocks      = [var.private_subnet_cidr]
+    cidr_blocks      = ["0.0.0.0/0"]
   }
 
   egress {

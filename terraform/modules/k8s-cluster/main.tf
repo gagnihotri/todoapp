@@ -24,14 +24,16 @@ resource "aws_instance" "bastion" {
   depends_on = [tls_private_key.node-key]
 }
 
-resource "null_resource" "copy-pem" {
+resource "null_resource" "create-pem" {
   provisioner "local-exec" {
     command = <<EOT
       echo '${tls_private_key.node-key.private_key_openssh}' > ./node-key.pem
       chmod 600 ./node-key.pem
     EOT
   }
+}
 
+resource "null_resource" "copy-pem" {
   # Now use the file provisioner to upload the private key to the bastion host
   provisioner "file" {
     source      = "./node-key.pem"  # Use the local file created by local-exec
@@ -57,7 +59,7 @@ resource "null_resource" "copy-pem" {
     ]
   }
 
-  depends_on = [aws_instance.bastion]
+  depends_on = [null_resource.create-pem]
 } 
 
 resource "aws_instance" "master" {
