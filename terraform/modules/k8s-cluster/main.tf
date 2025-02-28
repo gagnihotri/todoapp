@@ -76,6 +76,8 @@ resource "aws_instance" "master" {
     Name = "k8s-master",
     k8s-role = "master"
   }
+
+  depends_on = [tls_private_key.node-key]
 }
 
 resource "null_resource" "setup-master" {
@@ -137,6 +139,8 @@ resource "aws_instance" "worker" {
     Name = "k8s-worker-${count.index}",
     k8s-role = "worker"
   }
+
+  depends_on = [tls_private_key.node-key]
 }
 
 resource "null_resource" "setup-worker" {
