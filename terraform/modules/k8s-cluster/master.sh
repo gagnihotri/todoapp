@@ -63,6 +63,11 @@ tar Cxzvf ${CNI_DIR} ${CNI_TARBALL}
 rm -f ${CNI_TARBALL}
 echo "CNI plugins installed successfully!"
 
+modprobe br_netfilter
+echo "br_netfilter" | sudo tee -a /etc/modules-load.d/modules.conf
+echo "net.bridge.bridge-nf-call-iptables = 1" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
 # Create the directory with proper permissions (if not already exists)
 sudo mkdir -p -m 755 /etc/apt/keyrings
 
@@ -79,7 +84,7 @@ apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
 
 # Run kubeadm init
-kubeadm init --pod-network-cidr=192.168.0.0/16
+kubeadm init --pod-network-cidr=10.244.0.0/16
 
 # Set up kubeconfig for the ubuntu user (or your specific user)
 mkdir -p $HOME/.kube
