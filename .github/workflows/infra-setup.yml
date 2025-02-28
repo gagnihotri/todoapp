@@ -35,7 +35,7 @@ jobs:
       - name: Terraplan apply
         run: |
           cd terraform
-          terraform destroy --auto-approve
+          terraform apply tfplan
 
   ansible:
     name: Deploy build

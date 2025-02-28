@@ -31,11 +31,18 @@ else
     echo "Containerd already installed, skipping..."
 fi
 
-# Install containerd service file from the correct version
-wget https://raw.githubusercontent.com/containerd/containerd/v${CONTAINERD_VERSION}/containerd.service
-mkdir -p /usr/local/lib/systemd/system
-mv containerd.service /usr/local/lib/systemd/system/containerd.service
-systemctl daemon-reload
+SERVICE_FILE="/usr/local/lib/systemd/system/containerd.service"
+if [ ! -f "$SERVICE_FILE" ]; then
+    wget -q -O containerd.service "https://raw.githubusercontent.com/containerd/containerd/v${CONTAINERD_VERSION}/containerd.service"
+    mkdir -p /usr/local/lib/systemd/system
+    mv containerd.service "$SERVICE_FILE"
+
+    # Reload systemd only if a new file was added
+    systemctl daemon-reload
+    echo "Containerd service file updated and systemd reloaded."
+else
+    echo "Containerd service file already exists. Skipping download."
+fi
 
 mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
@@ -44,10 +51,17 @@ sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.to
 systemctl enable --now containerd
 systemctl restart containerd
 
-# Install runc
-wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
-install -m 755 runc.amd64 /usr/local/sbin/runc
-rm -f runc.amd64
+RUNC_VERSION="1.2.3"  # Set desired runc version
+RUNC_BIN="/usr/local/sbin/runc"
+if [ -x "$RUNC_BIN" ] && [ "$($RUNC_BIN --version | awk 'NR==1 {print $3}')" = "$RUNC_VERSION" ]; then
+    echo "runc v$RUNC_VERSION is already installed. Skipping."
+else
+    echo "Installing runc v$RUNC_VERSION..."
+    wget -q "https://github.com/opencontainers/runc/releases/download/v${RUNC_VERSION}/runc.amd64"
+    install -m 755 runc.amd64 "$RUNC_BIN"
+    rm -f runc.amd64
+    echo "runc v$RUNC_VERSION installed successfully."
+fi
 
 echo "-------------Installing CNI Plugins-------------"
 
@@ -57,20 +71,22 @@ CNI_TARBALL="cni-plugins-linux-amd64-v${CNI_VERSION}.tgz"
 CNI_DIR="/opt/cni/bin"
 
 mkdir -p ${CNI_DIR}
-echo "Downloading CNI plugins..."
-curl -O -L https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/${CNI_TARBALL}
-tar Cxzvf ${CNI_DIR} ${CNI_TARBALL}
-rm -f ${CNI_TARBALL}
-echo "CNI plugins installed successfully!"
+if [ ! -f "${CNI_DIR}/bridge" ]; then
+  echo "Downloading CNI plugins..."
+  curl -O -L https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/${CNI_TARBALL}
+  tar Cxzvf ${CNI_DIR} ${CNI_TARBALL}
+  rm -f ${CNI_TARBALL}
+  echo "CNI plugins installed successfully!"
+else
+  echo "CNI plugins already installed."
+fi
 
 modprobe br_netfilter
 echo "br_netfilter" | sudo tee -a /etc/modules-load.d/modules.conf
 echo "net.bridge.bridge-nf-call-iptables = 1" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 
-# Create the directory with proper permissions (if not already exists)
 sudo mkdir -p -m 755 /etc/apt/keyrings
-
 # Check if the key file already exists
 if [ ! -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg ]; then
   # Download the key if it doesn't exist
