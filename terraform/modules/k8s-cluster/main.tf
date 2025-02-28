@@ -172,7 +172,7 @@ resource "null_resource" "setup-worker" {
 
   provisioner "file" {
     source = "./modules/k8s-cluster/setup/common.sh"
-    destination = "/home/ubuntu"
+    destination = "/home/ubuntu/common.sh"
   }
 
   provisioner "remote-exec" {
