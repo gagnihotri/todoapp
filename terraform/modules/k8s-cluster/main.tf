@@ -100,14 +100,13 @@ resource "null_resource" "setup-master" {
 
   provisioner "file" {
     source = "./modules/k8s-cluster/setup/"
-    destination = "/home/ubuntu/setup/"
+    destination = "/home/ubuntu"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /home/ubuntu/setup/",
-      "sudo /home/ubuntu/setup/common.sh k8s-master",
-      "sudo /home/ubuntu/setup/master.sh"
+      "sudo chmod +x /home/ubuntu/common.sh k8s-master",
+      "sudo chomd +x /home/ubuntu/master.sh"
     ]
   }
 
@@ -165,17 +164,17 @@ resource "null_resource" "setup-worker" {
 
   provisioner "file" {
     source = "./modules/k8s-cluster/setup/common.sh"
-    destination = "/home/ubuntu/setup/common.sh"
+    destination = "/home/ubuntu"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /home/ubuntu/setup/common.sh",
-      "sudo /home/ubuntu/setup/common.sh k8s-worker"
+      "chmod +x /home/ubuntu/common.sh",
+      "sudo /home/ubuntu/common.sh k8s-worker"
     ]
   }
 
-  depends_on = [ aws_instance.worker ]
+  depends_on = [ null_resource.copy-pem ]
 }
 
 resource "null_resource" "join-workers" {
